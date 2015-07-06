@@ -415,6 +415,10 @@ class MetaHelper extends Helper {
 	 * - keywords
 	 * -
 	 *
+	 * Options:
+	 * - skip
+	 * - implode
+	 *
 	 * @param string $header Specific meta header to output
 	 * @param array $options
 	 * @return string
