@@ -5,20 +5,8 @@
 [![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%205.4-8892BF.svg)](https://php.net/)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
-## Installation
-
-You can install this plugin into your CakePHP application using [composer](http://getcomposer.org).
-
-The recommended way to install composer packages is:
-
-```
-composer require dereuromark/cakephp-meta
-```
-
-
-
-
-
+## Installation and Usage
+Please see [Docs](docs)
 
 ## ToDos
 

@@ -1,46 +1,30 @@
 # Installation
 
-## How to include
-Installing the Plugin is pretty much as with every other CakePHP Plugin.
+You can install this plugin into your CakePHP application using [composer](http://getcomposer.org).
+The recommended way to install composer packages is:
 
-Put the files in `ROOT/plugins/Feed`, using Packagist/Composer:
 ```
-composer require dereuromark/cakephp-feed:dev-master
+composer require dereuromark/cakephp-meta:dev-master
 ```
 
 or manually via
 
 ```
 "require": {
-	"dereuromark/cakephp-feed": "dev-master"
+	"dereuromark/cakephp-meta": "dev-master"
 }
 ```
 and
 
 	composer update
 
-Details @ https://packagist.org/packages/dereuromark/cakephp-feed
+Details @ https://packagist.org/packages/dereuromark/cakephp-meta
 
 This will load the plugin (within your boostrap file):
 ```php
-Plugin::load('Feed');
+Plugin::load('Meta');
 ```
 or
 ```php
 Plugin::loadAll(...);
 ```
-
-In case you want the Feed bootstrap file included (recommended), you can do that in your `ROOT/config/bootstrap.php` with
-
-```php
-Plugin::load('Feed', array('bootstrap' => true));
-```
-
-or
-
-```php
-Plugin::loadAll(array(
-		'Feed' => array('bootstrap' => true)
-));
-```
-
