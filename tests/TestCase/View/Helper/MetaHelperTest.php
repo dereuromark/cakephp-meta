@@ -1,0 +1,313 @@
+<?php
+namespace Meta\TestCase\View\Helper;
+
+use Meta\View\Helper\MetaHelper;
+use Cake\TestSuite\TestCase;
+use Cake\View\View;
+use Cake\Core\Configure;
+use Cake\Routing\Router;
+use Cake\Network\Request;
+
+/**
+ * MetaHelper tests
+ */
+class MetaHelperTest extends TestCase {
+
+	public $Meta;
+
+	public $defaultLocale;
+
+	public function setUp() {
+		parent::setUp();
+
+		Router::reload();
+
+		if ($this->defaultLocale === null) {
+			$this->defaultLocale = ini_get('intl.default_locale');
+		}
+
+		ini_set('intl.default_locale', 'de_DE');
+		Configure::delete('Meta');
+
+		$request = new Request();
+		$request->params['controller'] = 'ControllerName';
+		$request->params['action'] = 'actionName';
+		$View = new View($request);
+		$this->Meta = new MetaHelper($View);
+	}
+
+	/**
+	 * MetaHelperTest::testMetalanguage()
+	 *
+	 * @return void
+	 */
+	public function testMetaLanguage() {
+		$result = $this->Meta->language();
+		$expected = '';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->language(true);
+		$expected = '<meta http-equiv="language" content="de-DE"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->language();
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->language('deu');
+		$expected = '<meta http-equiv="language" content="deu"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->language();
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * MetaHelperTest::testMetalanguage()
+	 *
+	 * @return void
+	 */
+	public function testMetaLanguageConfiguration() {
+		ini_set('intl.default_locale', 'en_US');
+
+		$View = new View(null);
+		$this->Meta = new MetaHelper($View, ['language' => true]);
+
+		$result = $this->Meta->language();
+		$expected = '<meta http-equiv="language" content="en-US"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->language('en');
+		$expected = '<meta http-equiv="language" content="en"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->language();
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * MetaHelperTest::testMetaRobots()
+	 *
+	 * @return void
+	 */
+	public function testMetaRobots() {
+		$result = $this->Meta->robots();
+		$this->assertEquals('<meta name="robots" content="noindex,nofollow,noarchive"/>', $result);
+
+		$result = $this->Meta->robots(['index' => true]);
+		$this->assertEquals('<meta name="robots" content="index,nofollow,noarchive"/>', $result);
+
+		$result = $this->Meta->robots('noindex,nofollow,archive');
+		$this->assertEquals('<meta name="robots" content="noindex,nofollow,archive"/>', $result);
+
+		$result = $this->Meta->robots(false);
+		$this->assertEquals('', $result);
+	}
+
+	/**
+	 * MetaHelperTest::testMetaRobots()
+	 *
+	 * @return void
+	 */
+	public function testMetaRobotsConfiguration() {
+		Configure::write('Meta', ['robots' => ['index' => true]]);
+		$options = ['robots' => ['follow' => true]];
+		$View = new View(null);
+		$this->Meta = new MetaHelper($View, $options);
+
+		$result = $this->Meta->robots();
+		$this->assertEquals('<meta name="robots" content="index,follow,noarchive"/>', $result);
+
+		$result = $this->Meta->robots(['index' => false]);
+		$this->assertEquals('<meta name="robots" content="noindex,follow,noarchive"/>', $result);
+	}
+
+	/**
+	 * MetaHelperTest::testMetaName()
+	 *
+	 * @return void
+	 */
+	public function _testMetaName() {
+		$result = $this->Meta->metaName('foo', [1, 2, 3]);
+		$expected = '<meta name="foo" content="1, 2, 3" />';
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * MetaHelperTest::testMetaDescription()
+	 *
+	 * @return void
+	 */
+	public function testMetaDescription() {
+		$result = $this->Meta->description('descr');
+		$expected = '<meta name="description" content="descr"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->description();
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->description('foo', 'deu');
+		$expected = '<meta name="description" content="foo" lang="deu"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->description();
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * MetaHelperTest::testMetaKeywords()
+	 *
+	 * @return void
+	 */
+	public function testMetaKeywords() {
+		$result = $this->Meta->keywords('mystring');
+		$expected = '<meta name="keywords" content="mystring"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->keywords(['foo', 'bar']);
+		$expected = '<meta name="keywords" content="foo,bar"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->keywords();
+		$this->assertEquals($expected, $result);
+
+		// Locale keywords trump global ones
+		$result = $this->Meta->keywords(['fooD', 'barD'], 'deu');
+		$expected = '<meta name="keywords" content="fooD,barD" lang="deu"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->keywords();
+		$this->assertEquals($expected, $result);
+
+		// But you can force-get them
+		$result = $this->Meta->keywords(null, '*');
+		$expected = '<meta name="keywords" content="foo,bar"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->keywords(['fooE', 'barE'], 'eng');
+		$expected = '<meta name="keywords" content="fooE,barE" lang="eng"/>';
+		$this->assertEquals($expected, $result);
+
+		// Having multiple locale keywords combines them
+		$result = $this->Meta->keywords();
+		$expected = '<meta name="keywords" content="fooD,barD" lang="deu"/><meta name="keywords" content="fooE,barE" lang="eng"/>';
+		$this->assertEquals($expected, $result);
+
+		// Retrieve a specific one
+		$result = $this->Meta->keywords(null, 'eng');
+		$expected = '<meta name="keywords" content="fooE,barE" lang="eng"/>';
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * MetaHelperTest::testMetaRss()
+	 *
+	 * @return void
+	 */
+	public function _testMetaRss() {
+		$result = $this->Meta->metaRss('/some/url', 'some title');
+		$expected = '<link rel="alternate" type="application/rss+xml" title="some title" href="/some/url" />';
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * MetaHelperTest::testMetaEquiv()
+	 *
+	 * @return void
+	 */
+	public function testMetaHttpEquiv() {
+		$result = $this->Meta->httpEquiv('expires', '0');
+		$expected = '<meta http-equiv="expires" content="0"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->httpEquiv('foo', 'bar');
+		$expected = '<meta http-equiv="foo" content="bar"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->httpEquiv('expires');
+		$expected = '<meta http-equiv="expires" content="0"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->httpEquiv();
+		$expected = '<meta http-equiv="expires" content="0"/><meta http-equiv="foo" content="bar"/>';
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMetaCanonical() {
+		$is = $this->Meta->canonical('/some/url/param1');
+		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build('/some/url/param1', true) . '"/>', $is);
+
+		$is = $this->Meta->canonical(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], true);
+		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], true) . '"/>', $is);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function _testMetaAlternate() {
+		$is = $this->Meta->metaAlternate('/some/url/param1', 'de-de', true);
+		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url/param1', true) . '" rel="alternate" hreflang="de-de"/>', trim($is));
+
+		$is = $this->Meta->metaAlternate(['controller' => 'some', 'action' => 'url'], 'de', true);
+		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de"/>', trim($is));
+
+		$is = $this->Meta->metaAlternate(['controller' => 'some', 'action' => 'url'], ['de', 'de-ch'], true);
+		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de"/>' . PHP_EOL . '<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de-ch"/>', trim($is));
+
+		$is = $this->Meta->metaAlternate(['controller' => 'some', 'action' => 'url'], ['de' => ['ch', 'at'], 'en' => ['gb', 'us']], true);
+		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de-ch"/>' . PHP_EOL .
+			'<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de-at"/>' . PHP_EOL .
+			'<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="en-gb"/>' . PHP_EOL .
+			'<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="en-us"/>', trim($is));
+	}
+
+	public function testOut() {
+		$result = $this->Meta->out();
+
+		$expected = '<title>Controller Name - Action Name</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
+		$expected .= '<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>';
+		$expected .= '<meta name="robots" content="noindex,nofollow,noarchive"/>';
+		$this->assertTextEquals($expected, $result);
+
+		$this->Meta->title('Foo');
+		$this->Meta->canonical(true);
+		$this->Meta->language('deu');
+		$this->Meta->keywords('foo bar');
+		$this->Meta->keywords('foo bar EN', 'eng');
+		$this->Meta->description('A sentence');
+		$this->Meta->httpEquiv('expires', '0');
+		$this->Meta->robots(['index' => true]);
+		$this->Meta->custom('viewport', 'width=device-width, initial-scale=1');
+		$this->Meta->custom('x', 'y');
+
+		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
+
+		$expected = '<title>Foo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+<link rel="canonical" href="/"/>
+<meta http-equiv="language" content="deu"/>
+<meta name="robots" content="index,nofollow,noarchive"/>
+<meta name="keywords" content="foo bar" lang="deu"/><meta name="keywords" content="foo bar EN" lang="eng"/>
+<meta name="description" content="A sentence"/>
+<meta name="http-equiv" content="0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="x" content="y"/>';
+		$this->assertTextEquals($expected, $result);
+	}
+
+	/**
+	 * TearDown method
+	 *
+	 * @return void
+	 */
+	public function tearDown() {
+		parent::tearDown();
+
+		unset($this->Meta);
+
+		ini_set('intl.default_locale', $this->defaultLocale);
+	}
+
+}

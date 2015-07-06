@@ -1,0 +1,22 @@
+{
+    "name": "dereuromark/cakephp-meta",
+    "description": "Meta plugin for CakePHP",
+    "type": "cakephp-plugin",
+	"keywords": ["cakephp", "plugin", "view", "SEO", "meta", "canonical"],
+	"homepage": "https://github.com/dereuromark/cakephp-meta",
+    "require": {
+        "php": ">=5.4.16",
+        "cakephp/cakephp": "~3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Meta\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Meta\\Test\\": "tests",
+            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    }
+}
