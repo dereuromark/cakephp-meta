@@ -4,6 +4,7 @@
     "type": "cakephp-plugin",
 	"keywords": ["cakephp", "plugin", "view", "SEO", "meta", "canonical"],
 	"homepage": "https://github.com/dereuromark/cakephp-meta",
+	"license": "MIT",
     "require": {
         "php": ">=5.4.16",
         "cakephp/cakephp": "~3.0"
