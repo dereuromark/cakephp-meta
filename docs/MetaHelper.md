@@ -11,15 +11,17 @@ $this->loadHelper('ToolsExtra.Meta', ['robots' => ['index' => true, 'follow' => 
 
 ## Configs
 
-'title' => null,
-'charset' => null,
-'icon' => null,
-'canonical' => null, // Set to true for auto-detect
-'language' => null, // Set to true for auto-detect
-'robots' => ['index' => false, 'follow' => false, 'archive' => false]
+- 'title' => null,
+- 'charset' => null,
+- 'icon' => null,
+- 'canonical' => null, // Set to true for auto-detect
+- 'language' => null, // Set to true for auto-detect
+- 'robots' => ['index' => false, 'follow' => false, 'archive' => false]
+
+and a few more.
 
 You can define your defaults in various places, the lowest is the Configure level in your app.php:
-```
+```php
 $config = [
 	'Meta' => [
 		'language => 'de',
@@ -51,13 +53,13 @@ $this->Meta->robots(['index' => false]);
 ## Output
 Remove all your meta output in the view and replace it with
 ```php
-$this->Meta->out();
+echo $this->Meta->out();
 ```
 It will iterate over all defined meta tags and output them.
 Note that you can skip some of those, if you want using the `skip` option.
 
-You can also manually output them all, e.g. all keywords and descriptions in all languages using
+You can also manually output them all, e.g. all keywords and descriptions (which you defined before) in all languages using
 ```php
-$this->Meta->keywords();
-$this->Meta->description();
+echo $this->Meta->keywords();
+echo $this->Meta->description();
 ```
