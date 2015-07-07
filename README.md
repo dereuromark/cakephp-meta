@@ -5,6 +5,12 @@
 [![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%205.4-8892BF.svg)](https://php.net/)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
+This plugin helps to maintain and output meta tags for your HTML pages, including SEO relevant parts like
+"title", "keywords", "description", "robots" and "canonical".
+
+It can be used as a simple view-only approach using the included helper, it can also be DB driven if desired, or dynamically
+be created from the controller context by passing the meta data to the view.
+
 ## Installation and Usage
 Please see [Docs](docs)
 
