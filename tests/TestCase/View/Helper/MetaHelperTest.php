@@ -263,6 +263,9 @@ class MetaHelperTest extends TestCase {
 			'<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="en-us"/>', trim($is));
 	}
 
+	/**
+	 * @return void
+	 */
 	public function testOut() {
 		$result = $this->Meta->out();
 
@@ -273,9 +276,9 @@ class MetaHelperTest extends TestCase {
 
 		$this->Meta->title('Foo');
 		$this->Meta->canonical(true);
-		$this->Meta->language('deu');
+		$this->Meta->language('de');
 		$this->Meta->keywords('foo bar');
-		$this->Meta->keywords('foo bar EN', 'eng');
+		$this->Meta->keywords('foo bar EN', 'en');
 		$this->Meta->description('A sentence');
 		$this->Meta->httpEquiv('expires', '0');
 		$this->Meta->robots(['index' => true]);
@@ -288,10 +291,10 @@ class MetaHelperTest extends TestCase {
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <link rel="canonical" href="/"/>
-<meta http-equiv="language" content="deu"/>
+<meta http-equiv="language" content="de"/>
 <meta name="robots" content="index,nofollow,noarchive"/>
-<meta name="keywords" content="foo bar" lang="deu"/><meta name="keywords" content="foo bar EN" lang="eng"/>
-<meta name="description" content="A sentence"/>
+<meta name="keywords" content="foo bar" lang="de"/><meta name="keywords" content="foo bar EN" lang="en"/>
+<meta name="description" content="A sentence" lang="de"/>
 <meta name="http-equiv" content="0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="x" content="y"/>';
 		$this->assertTextEquals($expected, $result);
