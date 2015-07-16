@@ -301,6 +301,46 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testOutMultiLanguageFalse() {
+		$this->Meta->config('multiLanguage', false);
+
+		$this->Meta->language('de');
+		$this->Meta->keywords('foo bar');
+		$this->Meta->keywords('foo bar EN', 'en');
+		$this->Meta->description('A sentence', 'de');
+		$this->Meta->description('A sentence EN', 'en');
+
+		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
+
+		$expected = '<title>Controller Name - Action Name</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+<meta http-equiv="language" content="de"/>
+<meta name="robots" content="noindex,nofollow,noarchive"/>
+<meta name="keywords" content="foo bar" lang="de"/>
+<meta name="description" content="A sentence" lang="de"/>';
+		$this->assertTextEquals($expected, $result);
+
+		$this->Meta->language('en');
+		$this->Meta->keywords('foo bar');
+		$this->Meta->keywords('foo bar EN', 'en');
+		$this->Meta->description('A sentence', 'de');
+		$this->Meta->description('A sentence EN', 'en');
+
+		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
+		$expected = '<title>Controller Name - Action Name</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+<meta http-equiv="language" content="en"/>
+<meta name="robots" content="noindex,nofollow,noarchive"/>
+<meta name="keywords" content="foo bar EN" lang="en"/>
+<meta name="description" content="A sentence EN" lang="en"/>';
+		$this->assertTextEquals($expected, $result);
+	}
+
+	/**
 	 * TearDown method
 	 *
 	 * @return void

@@ -223,6 +223,10 @@ class MetaHelper extends Helper {
 	 */
 	public function description($description = null, $lang = null) {
 		if ($description !== null) {
+			if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->config('multiLanguage')) {
+				return '';
+			}
+
 			if ($lang === null) {
 				$lang = $this->meta['language'] ?: '*';
 			}
@@ -265,6 +269,10 @@ class MetaHelper extends Helper {
 	 */
 	public function keywords($keywords = null, $lang = null) {
 		if ($keywords !== null) {
+			if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->config('multiLanguage')) {
+				return '';
+			}
+
 			if ($lang === null) {
 				$lang = $this->meta['language'] ?: '*';
 			}
@@ -490,8 +498,11 @@ class MetaHelper extends Helper {
 			if (in_array($header, $options['skip'])) {
 				continue;
 			}
-
-			$results[] = $this->out($header, $options);
+			$out = $this->out($header, $options);
+			if ($out === '') {
+				continue;
+			}
+			$results[] = $out;
 		}
 
 		return implode($options['implode'], $results);
