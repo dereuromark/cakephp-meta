@@ -21,6 +21,10 @@ class MetaHelper extends Helper {
 	 */
 	public $helpers = array('Html', 'Url');
 
+	public $_defaultConfig = [
+		'multiLanguage' => true, // Disable to only display the localized tag to the current language
+	];
+
 	/**
 	 * Meta headers for the response
 	 *
@@ -32,7 +36,7 @@ class MetaHelper extends Helper {
 		'icon' => null,
 		'canonical' => null, // Set to true for auto-detect
 		'language' => null, // Set to true for auto-detect
-		'robots' => ['index' => false, 'follow' => false, 'archive' => false]
+		'robots' => ['index' => false, 'follow' => false, 'archive' => false],
 	);
 
 	/**
@@ -244,10 +248,6 @@ class MetaHelper extends Helper {
 
 		if ($description === false) {
 			return '';
-		}
-
-		if (is_array($description)) {
-			$description = implode(',', $description);
 		}
 
 		$array = [
@@ -465,6 +465,10 @@ class MetaHelper extends Helper {
 
 			if ($header === 'keywords') {
 				return $this->keywords();
+			}
+
+			if ($header === 'description') {
+				return $this->description();
 			}
 
 			if ($header === 'custom') {
