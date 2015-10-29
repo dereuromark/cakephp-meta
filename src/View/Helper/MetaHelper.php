@@ -165,6 +165,40 @@ class MetaHelper extends Helper {
 	}
 
 	/**
+	 * @param strin $url
+	 * @param int $size
+	 * @param array $options
+	 * @return string
+	 */
+	public function sizesIcon($url, $size, array $options = []) {
+		if ($url !== null) {
+			$options += [
+				'size' => $size,
+				'prefix' => null
+			];
+			$this->meta['sizesIcon'][$url] = $options;
+		}
+
+		$value = $this->meta['sizesIcon'][$url];
+		if ($value === false) {
+			return '';
+		}
+		if ($value === true) {
+			$value = null;
+		}
+
+		$options = [
+			'rel' => $value['prefix'] . 'icon',
+			'sizes' => $value['size'] . 'x' . $value['size'],
+		] + $options;
+		$array = [
+			'url' => $url,
+			'attrs' => $this->Html->templater()->formatAttributes($options, ['prefix', 'size'])
+		];
+		return $this->Html->templater()->format('metalink', $array);
+	}
+
+	/**
 	 * @param null $value
 	 * @return string
 	 */

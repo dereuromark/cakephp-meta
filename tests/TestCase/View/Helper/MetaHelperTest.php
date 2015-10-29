@@ -205,7 +205,24 @@ class MetaHelperTest extends TestCase {
 	 */
 	public function _testMetaRss() {
 		$result = $this->Meta->metaRss('/some/url', 'some title');
-		$expected = '<link rel="alternate" type="application/rss+xml" title="some title" href="/some/url" />';
+		$expected = '<link rel="alternate" type="application/rss+xml" title="some title" href="/some/url"/>';
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSizesIcon() {
+		$result = $this->Meta->sizesIcon('/favicon-32x32.png', 32);
+		$expected = '<link href="/favicon-32x32.png" rel="icon" sizes="32x32"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->sizesIcon('/favicon-32x32.png', 32, ['type' => 'image/png']);
+		$expected = '<link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->sizesIcon('/apple-touch-icon-57x57.png', 57, ['prefix' => 'apple-touch-']);
+		$expected = '<link href="/apple-touch-icon-57x57.png" rel="apple-touch-icon" sizes="57x57"/>';
 		$this->assertEquals($expected, $result);
 	}
 
