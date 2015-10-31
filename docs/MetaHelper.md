@@ -3,10 +3,10 @@
 ## Enabling
 You can enable the helper in your AppView class:
 ```php
-$this->loadHelper('ToolsExtra.Meta');
+$this->loadHelper('Meta.Meta');
 
 // or setting different defaults
-$this->loadHelper('ToolsExtra.Meta', ['robots' => ['index' => true, 'follow' => true]]);
+$this->loadHelper('Meta.Meta', ['robots' => ['index' => true, 'follow' => true]]);
 ```
 
 ## Configs
