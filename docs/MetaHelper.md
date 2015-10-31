@@ -28,6 +28,7 @@ $config = [
 		'robots' => ['index' => true, 'follow' => true]
 	]
 ];
+```
 
 You can pass them to the loadHelper() method as shown above.
 
