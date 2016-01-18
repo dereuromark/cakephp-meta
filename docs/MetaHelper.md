@@ -24,7 +24,7 @@ You can define your defaults in various places, the lowest is the Configure leve
 ```php
 $config = [
 	'Meta' => [
-		'language => 'de',
+		'language' => 'de',
 		'robots' => ['index' => true, 'follow' => true]
 	]
 ];
@@ -37,7 +37,7 @@ If you need to customize them per controller or per action you can pass them fro
 In your controller, you could do the following:
 ```php
 $_meta = [
-	'title => 'Foo Bar',
+	'title' => 'Foo Bar',
 	'robots' => ['index' => false]
 ];
 $this->set(compact('_meta')));
