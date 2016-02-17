@@ -19,7 +19,7 @@ class MetaHelper extends Helper {
 	 *
 	 * @var array
 	 */
-	public $helpers = array('Html', 'Url');
+	public $helpers = ['Html', 'Url'];
 
 	public $_defaultConfig = [
 		'multiLanguage' => true, // Disable to only display the localized tag to the current language
@@ -30,14 +30,14 @@ class MetaHelper extends Helper {
 	 *
 	 * @var array
 	 */
-	public $meta = array(
+	public $meta = [
 		'title' => null,
 		'charset' => null,
 		'icon' => null,
 		'canonical' => null, // Set to true for auto-detect
 		'language' => null, // Set to true for auto-detect
 		'robots' => ['index' => false, 'follow' => false, 'archive' => false],
-	);
+	];
 
 	/**
 	 * Class Constructor
@@ -50,7 +50,7 @@ class MetaHelper extends Helper {
 	 *
 	 * @param array $options
 	 */
-	public function __construct(View $View, $options = array()) {
+	public function __construct(View $View, $options = []) {
 		parent::__construct($View, $options);
 
 		$configureMeta = (array)Configure::read('Meta');
@@ -93,7 +93,7 @@ class MetaHelper extends Helper {
 	 *
 	 * Autoformats de_DE to de-DE.
 	 *
-	 * @return null|string
+	 * @return string|null
 	 */
 	protected function _guessLanguage() {
 		$locale = ini_get('intl.default_locale');
@@ -108,7 +108,7 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param null $value
+	 * @param string|null $value
 	 * @return string
 	 */
 	public function title($value = null) {
@@ -125,7 +125,7 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param null $value
+	 * @param string|null $value
 	 * @return string
 	 */
 	public function charset($value = null) {
@@ -145,7 +145,7 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param null $value
+	 * @param string|null $value
 	 * @return string
 	 */
 	public function icon($value = null) {
@@ -165,7 +165,7 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param strin $url
+	 * @param string $url
 	 * @param int $size
 	 * @param array $options
 	 * @return string
@@ -199,7 +199,7 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param null $value
+	 * @param string|null $value
 	 * @return string
 	 */
 	public function language($value = null) {
@@ -348,8 +348,8 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param null $name
-	 * @param null $value
+	 * @param string|null $name
+	 * @param string|null $value
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -465,11 +465,11 @@ class MetaHelper extends Helper {
 	 * @param array $options
 	 * @return string
 	 */
-	public function out($header = null, $options = array()) {
-		$defaults = array(
+	public function out($header = null, $options = []) {
+		$defaults = [
 			'implode' => '',
-			'skip' => array(),
-		);
+			'skip' => [],
+		];
 		$options += $defaults;
 
 		if (!is_array($options['skip'])) {
@@ -517,7 +517,7 @@ class MetaHelper extends Helper {
 				return $this->custom();
 			}
 
-			$meta = array('name' => $header, 'content' => $this->meta[$header]);
+			$meta = ['name' => $header, 'content' => $this->meta[$header]];
 			if (($pos = strpos($header, ':')) !== false) {
 				$meta['name'] = substr($header, $pos + 1);
 				$meta['property'] = $header;
@@ -526,7 +526,7 @@ class MetaHelper extends Helper {
 			return $this->Html->meta($meta);
 		}
 
-		$results = array();
+		$results = [];
 
 		foreach ($this->meta as $header => $value) {
 			if (in_array($header, $options['skip'])) {

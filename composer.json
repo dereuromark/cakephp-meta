@@ -19,5 +19,8 @@
 			"Meta\\Test\\": "tests",
 			"Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
 		}
+	},
+	"require-dev": {
+		"fig-r/psr2r-sniffer": "dev-master"
 	}
 }
