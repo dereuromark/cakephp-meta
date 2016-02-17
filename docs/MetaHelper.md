@@ -52,14 +52,18 @@ $this->Meta->robots(['index' => false]);
 ```
 
 ## Output
-Remove all your meta output in the view and replace it with
+Remove all your meta output in the layout and replace it with
 ```php
-echo $this->Meta->out();
+echo $this->Meta->out(); // This contains all the tags
+echo $this->fetch('meta'); // This is a fallback (optional) for view blocks
 ```
 It will iterate over all defined meta tags and output them.
 Note that you can skip some of those, if you want using the `skip` option.
 
-You can also manually output them all, e.g. all keywords and descriptions (which you defined before) in all languages using
+If you don't manually outputting them, you must define all tags prior to the `out()` call.
+The  `out()` call should be the last PHP code in your `<head></head>` section the layout HTML.
+
+You can also manually output each group of meta tags, e.g. all keywords and descriptions (which you defined before) in all languages using
 ```php
 echo $this->Meta->keywords();
 echo $this->Meta->description();

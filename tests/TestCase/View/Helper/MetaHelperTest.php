@@ -286,7 +286,7 @@ class MetaHelperTest extends TestCase {
 	public function testOut() {
 		$result = $this->Meta->out();
 
-		$expected = '<title>Controller Name - Action Name</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
+		$expected = '<title>Controller Name - Action Name</title><meta charset="utf-8"/>';
 		$expected .= '<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>';
 		$expected .= '<meta name="robots" content="noindex,nofollow,noarchive"/>';
 		$this->assertTextEquals($expected, $result);
@@ -305,7 +305,7 @@ class MetaHelperTest extends TestCase {
 		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
 
 		$expected = '<title>Foo</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta charset="utf-8"/>
 <link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <link rel="canonical" href="/"/>
 <meta http-equiv="language" content="de"/>
@@ -332,7 +332,7 @@ class MetaHelperTest extends TestCase {
 		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
 
 		$expected = '<title>Controller Name - Action Name</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta charset="utf-8"/>
 <link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <meta http-equiv="language" content="de"/>
 <meta name="robots" content="noindex,nofollow,noarchive"/>
@@ -348,7 +348,7 @@ class MetaHelperTest extends TestCase {
 
 		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
 		$expected = '<title>Controller Name - Action Name</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta charset="utf-8"/>
 <link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <meta http-equiv="language" content="en"/>
 <meta name="robots" content="noindex,nofollow,noarchive"/>
