@@ -50,6 +50,9 @@ $this->Meta->keywords('Ich, bin, deutsch', 'de');
 $this->Meta->description('Foo Bar');
 $this->Meta->robots(['index' => false]);
 ```
+By default this will not output anything, but collect it inside the helper.
+Those calls can be best made in a view or element (because those are rendered before the layout).
+If you do it inside a layout make sure this happens before you call `out()`.
 
 ## Output
 Remove all your meta output in the layout and replace it with
