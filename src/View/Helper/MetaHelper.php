@@ -3,11 +3,11 @@ namespace Meta\View\Helper;
 
 use Cake\Core\Configure;
 use Cake\Network\Response;
+use Cake\Utility\Hash;
+use Cake\Utility\Inflector;
 use Cake\View\Helper;
 use Cake\View\StringTemplateTrait;
 use Cake\View\View;
-use Cake\Utility\Inflector;
-use Cake\Utility\Hash;
 
 /**
  * Helper class.

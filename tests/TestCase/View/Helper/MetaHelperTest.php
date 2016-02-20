@@ -1,12 +1,12 @@
 <?php
 namespace Meta\TestCase\View\Helper;
 
-use Meta\View\Helper\MetaHelper;
+use Cake\Core\Configure;
+use Cake\Network\Request;
+use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
-use Cake\Core\Configure;
-use Cake\Routing\Router;
-use Cake\Network\Request;
+use Meta\View\Helper\MetaHelper;
 
 /**
  * MetaHelper tests
