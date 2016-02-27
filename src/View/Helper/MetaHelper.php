@@ -22,6 +22,11 @@ class MetaHelper extends Helper {
 	 */
 	public $helpers = ['Html', 'Url'];
 
+	/**
+	 * Default config.
+	 *
+	 * @var array
+	 */
 	public $_defaultConfig = [
 		'multiLanguage' => true, // Disable to only display the localized tag to the current language
 	];

@@ -14,8 +14,14 @@ use Meta\View\Helper\MetaHelper;
  */
 class MetaHelperTest extends TestCase {
 
+	/**
+	 * @var \Meta\View\Helper\MetaHelper
+	 */
 	public $Meta;
 
+	/**
+	 * @var string
+	 */
 	public $defaultLocale;
 
 	public function setUp() {
