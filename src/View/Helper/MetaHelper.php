@@ -11,7 +11,8 @@ use Cake\View\StringTemplateTrait;
 use Cake\View\View;
 
 /**
- * Helper class.
+ * @property \Cake\View\Helper\HtmlHelper $Html
+ * @property \Cake\View\Helper\UrlHelper $Url
  */
 class MetaHelper extends Helper {
 
@@ -54,6 +55,7 @@ class MetaHelper extends Helper {
 	 * - viewVars _meta
 	 * in that order (the latter trumps)
 	 *
+	 * @param \Cake\View\View $View
 	 * @param array $options
 	 */
 	public function __construct(View $View, $options = []) {
@@ -273,10 +275,21 @@ class MetaHelper extends Helper {
 
 			$this->meta['description'][$lang] = $description;
 		}
+		if (!is_array($this->meta['description'])) {
+			if ($lang === null) {
+				$lang = $this->meta['language'] ?: '*';
+			}
+			$this->meta['description'] = [$lang => $this->meta['description']];
+		}
 
 		if ($lang === null) {
+			$description = $this->meta['description'];
+			if (!is_array($description)) {
+				return $this->description($description, $lang);
+			}
+
 			$res = [];
-			foreach ($this->meta['description'] as $lang => $content) {
+			foreach ($description as $lang => $content) {
 				if ($lang === '*') {
 					$lang = null;
 					if (count($this->meta['description']) > 1) {

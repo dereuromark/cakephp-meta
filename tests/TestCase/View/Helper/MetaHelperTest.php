@@ -20,6 +20,11 @@ class MetaHelperTest extends TestCase {
 	public $Meta;
 
 	/**
+	 * @var \Cake\View\View
+	 */
+	public $View;
+
+	/**
 	 * @var string
 	 */
 	public $defaultLocale;
@@ -39,8 +44,8 @@ class MetaHelperTest extends TestCase {
 		$request = new Request();
 		$request->params['controller'] = 'ControllerName';
 		$request->params['action'] = 'actionName';
-		$View = new View($request);
-		$this->Meta = new MetaHelper($View);
+		$this->View = new View($request);
+		$this->Meta = new MetaHelper($this->View);
 	}
 
 	/**
@@ -140,8 +145,6 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
-	 * MetaHelperTest::testMetaDescription()
-	 *
 	 * @return void
 	 */
 	public function testMetaDescription() {
@@ -157,6 +160,18 @@ class MetaHelperTest extends TestCase {
 		$this->assertEquals($expected, $result);
 
 		$result = $this->Meta->description();
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testMetaDescriptionString() {
+		$this->View->viewVars['_meta']['description'] = 'Foo Bar';
+		$this->Meta = new MetaHelper($this->View);
+
+		$result = $this->Meta->description();
+		$expected = '<meta name="description" content="Foo Bar"/>';
 		$this->assertEquals($expected, $result);
 	}
 
