@@ -3,12 +3,11 @@
 namespace Meta\View\Helper;
 
 use Cake\Core\Configure;
-use Cake\Network\Response;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\View\Helper;
-use Cake\View\StringTemplateTrait;
 use Cake\View\View;
+use Exception;
 
 /**
  * @property \Cake\View\Helper\HtmlHelper $Html
@@ -375,7 +374,7 @@ class MetaHelper extends Helper {
 	public function custom($name = null, $value = null) {
 		if ($value !== null) {
 			if ($name === null) {
-				throw new \Exception('Name must be provided');
+				throw new Exception('Name must be provided');
 			}
 
 			$this->meta['custom'][$name] = $value;
@@ -438,7 +437,7 @@ class MetaHelper extends Helper {
 	public function httpEquiv($type = null, $value = null) {
 		if ($value !== null) {
 			if ($type === null) {
-				throw new \Exception('Type must be provided');
+				throw new Exception('Type must be provided');
 			}
 
 			$this->meta['http-equiv'][$type] = $value;
@@ -480,7 +479,7 @@ class MetaHelper extends Helper {
 	 * - skip
 	 * - implode
 	 *
-	 * @param string $header Specific meta header to output
+	 * @param string|null $header Specific meta header to output
 	 * @param array $options
 	 * @return string
 	 */
