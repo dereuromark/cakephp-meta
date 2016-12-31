@@ -283,9 +283,6 @@ class MetaHelper extends Helper {
 
 		if ($lang === null) {
 			$description = $this->meta['description'];
-			if (!is_array($description)) {
-				return $this->description($description, $lang);
-			}
 
 			$res = [];
 			foreach ($description as $lang => $content) {
@@ -332,10 +329,18 @@ class MetaHelper extends Helper {
 			$keywords = (array)$keywords;
 			$this->meta['keywords'][$lang] = $keywords;
 		}
+		if (!is_array($this->meta['keywords'])) {
+			if ($lang === null) {
+				$lang = $this->meta['language'] ?: '*';
+			}
+			$this->meta['keywords'] = [$lang => $this->meta['keywords']];
+		}
 
 		if ($lang === null) {
+			$keywords = $this->meta['keywords'];
+
 			$res = [];
-			foreach ($this->meta['keywords'] as $lang => $keywords) {
+			foreach ($keywords as $lang => $keywords) {
 				if ($lang === '*') {
 					$lang = null;
 					if (count($this->meta['keywords']) > 1) {

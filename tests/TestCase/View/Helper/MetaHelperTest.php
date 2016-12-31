@@ -221,6 +221,18 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testMetaKeywordsString() {
+		$this->View->viewVars['_meta']['keywords'] = 'Foo,Bar';
+		$this->Meta = new MetaHelper($this->View);
+
+		$result = $this->Meta->keywords();
+		$expected = '<meta name="keywords" content="Foo,Bar"/>';
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
 	 * MetaHelperTest::testMetaRss()
 	 *
 	 * @return void
