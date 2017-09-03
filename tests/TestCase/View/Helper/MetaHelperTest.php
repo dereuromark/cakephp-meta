@@ -29,6 +29,9 @@ class MetaHelperTest extends TestCase {
 	 */
 	public $defaultLocale;
 
+	/**
+	 * @return void
+	 */
 	public function setUp() {
 		parent::setUp();
 
