@@ -13,8 +13,8 @@
 
     <!-- Add any additional test suites you want to run here -->
     <testsuites>
-        <testsuite name="Meta Test Suite">
-            <directory>./tests/TestCase</directory>
+        <testsuite name="meta">
+            <directory>tests/TestCase/</directory>
         </testsuite>
     </testsuites>
 
@@ -32,7 +32,7 @@
     <!-- Prevent coverage reports from looking in tests and vendors -->
     <filter>
 		<whitelist>
-			<directory suffix=".php">./src</directory>
+			<directory suffix=".php">src/</directory>
 		</whitelist>
     </filter>
 

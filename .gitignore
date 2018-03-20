@@ -2,3 +2,5 @@
 /composer.lock
 /vendor/
 /tmp/
+/.idea/
+/composer.phar
