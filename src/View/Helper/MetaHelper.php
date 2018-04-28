@@ -264,7 +264,7 @@ class MetaHelper extends Helper {
 	 */
 	public function description($description = null, $lang = null) {
 		if ($description !== null) {
-			if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->config('multiLanguage')) {
+			if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->getConfig('multiLanguage')) {
 				return '';
 			}
 

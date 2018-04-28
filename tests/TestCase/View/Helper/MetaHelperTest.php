@@ -358,7 +358,7 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testOutMultiLanguageFalse() {
-		$this->Meta->config('multiLanguage', false);
+		$this->Meta->setConfig('multiLanguage', false);
 
 		$this->Meta->language('de');
 		$this->Meta->keywords('foo bar');
