@@ -181,7 +181,7 @@ class MetaHelper extends Helper {
 		if ($url !== null) {
 			$options += [
 				'size' => $size,
-				'prefix' => null
+				'prefix' => null,
 			];
 			$this->meta['sizesIcon'][$url] = $options;
 		}
@@ -200,7 +200,7 @@ class MetaHelper extends Helper {
 		] + $options;
 		$array = [
 			'url' => $url,
-			'attrs' => $this->Html->templater()->formatAttributes($options, ['prefix', 'size'])
+			'attrs' => $this->Html->templater()->formatAttributes($options, ['prefix', 'size']),
 		];
 		return $this->Html->templater()->format('metalink', $array);
 	}
@@ -222,7 +222,7 @@ class MetaHelper extends Helper {
 
 		$array = [
 			'http-equiv' => 'language',
-			'content' => $language
+			'content' => $language,
 		];
 		return $this->Html->meta($array);
 	}
@@ -400,7 +400,7 @@ class MetaHelper extends Helper {
 
 		$array = [
 			'name' => $name,
-			'content' => $value
+			'content' => $value,
 		];
 		return $this->Html->meta($array);
 	}
@@ -463,7 +463,7 @@ class MetaHelper extends Helper {
 
 		$array = [
 			'http-equiv' => $type,
-			'content' => $value
+			'content' => $value,
 		];
 		return $this->Html->meta($array);
 	}
