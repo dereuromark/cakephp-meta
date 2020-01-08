@@ -4,7 +4,9 @@ namespace Meta\TestCase\View\Helper;
 
 use Cake\Core\Configure;
 use Cake\Http\ServerRequest;
+use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
+use Cake\Routing\Route\DashedRoute;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use Meta\View\Helper\MetaHelper;
@@ -17,25 +19,23 @@ class MetaHelperTest extends TestCase {
 	/**
 	 * @var \Meta\View\Helper\MetaHelper
 	 */
-	public $Meta;
+	protected $Meta;
 
 	/**
 	 * @var \Cake\View\View
 	 */
-	public $View;
+	protected $View;
 
 	/**
 	 * @var string
 	 */
-	public $defaultLocale;
+	protected $defaultLocale;
 
 	/**
 	 * @return void
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
-
-		Router::reload();
 
 		if ($this->defaultLocale === null) {
 			$this->defaultLocale = ini_get('intl.default_locale');
@@ -50,11 +50,13 @@ class MetaHelperTest extends TestCase {
 
 		$this->View = new View($request);
 		$this->Meta = new MetaHelper($this->View);
+
+		Router::plugin('Meta', function (RouteBuilder $routes) {
+			$routes->fallbacks(DashedRoute::class);
+		});
 	}
 
 	/**
-	 * MetaHelperTest::testMetalanguage()
-	 *
 	 * @return void
 	 */
 	public function testMetaLanguage() {
@@ -83,8 +85,7 @@ class MetaHelperTest extends TestCase {
 	public function testMetaLanguageConfiguration() {
 		ini_set('intl.default_locale', 'en_US');
 
-		$View = new View(null);
-		$this->Meta = new MetaHelper($View, ['language' => true]);
+		$this->Meta = new MetaHelper($this->View, ['language' => true]);
 
 		$result = $this->Meta->language();
 		$expected = '<meta http-equiv="language" content="en-US"/>';
@@ -121,8 +122,7 @@ class MetaHelperTest extends TestCase {
 	public function testMetaRobotsConfiguration() {
 		Configure::write('Meta', ['robots' => ['index' => true]]);
 		$options = ['robots' => ['follow' => true]];
-		$View = new View(null);
-		$this->Meta = new MetaHelper($View, $options);
+		$this->Meta = new MetaHelper($this->View, $options);
 
 		$result = $this->Meta->robots();
 		$this->assertEquals('<meta name="robots" content="index,follow,noarchive"/>', $result);
@@ -163,7 +163,7 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testMetaDescriptionString() {
-		$this->View->viewVars['_meta']['description'] = 'Foo Bar';
+		$this->View->set('_meta', ['description' => 'Foo Bar']);
 		$this->Meta = new MetaHelper($this->View);
 
 		$result = $this->Meta->description();
@@ -220,7 +220,7 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testMetaKeywordsString() {
-		$this->View->viewVars['_meta']['keywords'] = 'Foo,Bar';
+		$this->View->set('_meta', ['keywords' => 'Foo,Bar']);
 		$this->Meta = new MetaHelper($this->View);
 
 		$result = $this->Meta->keywords();
@@ -282,10 +282,10 @@ class MetaHelperTest extends TestCase {
 	 */
 	public function testMetaCanonical() {
 		$is = $this->Meta->canonical('/some/url/param1');
-		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build('/some/url/param1', true) . '"/>', $is);
+		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build('/some/url/param1', ['fullBase' => true]) . '"/>', $is);
 
 		$is = $this->Meta->canonical(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], true);
-		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], true) . '"/>', $is);
+		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], ['fullBase' => true]) . '"/>', $is);
 	}
 
 	/**
@@ -293,19 +293,19 @@ class MetaHelperTest extends TestCase {
 	 */
 	public function _testMetaAlternate() {
 		$is = $this->Meta->metaAlternate('/some/url/param1', 'de-de', true);
-		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url/param1', true) . '" rel="alternate" hreflang="de-de"/>', trim($is));
+		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url/param1', ['fullBase' => true]) . '" rel="alternate" hreflang="de-de"/>', trim($is));
 
 		$is = $this->Meta->metaAlternate(['controller' => 'some', 'action' => 'url'], 'de', true);
-		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de"/>', trim($is));
+		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', ['fullBase' => true]) . '" rel="alternate" hreflang="de"/>', trim($is));
 
 		$is = $this->Meta->metaAlternate(['controller' => 'some', 'action' => 'url'], ['de', 'de-ch'], true);
-		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de"/>' . PHP_EOL . '<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de-ch"/>', trim($is));
+		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', ['fullBase' => true]) . '" rel="alternate" hreflang="de"/>' . PHP_EOL . '<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de-ch"/>', trim($is));
 
 		$is = $this->Meta->metaAlternate(['controller' => 'some', 'action' => 'url'], ['de' => ['ch', 'at'], 'en' => ['gb', 'us']], true);
-		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de-ch"/>' . PHP_EOL .
-			'<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="de-at"/>' . PHP_EOL .
-			'<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="en-gb"/>' . PHP_EOL .
-			'<link href="' . $this->Meta->Url->build('/some/url', true) . '" rel="alternate" hreflang="en-us"/>', trim($is));
+		$this->assertEquals('<link href="' . $this->Meta->Url->build('/some/url', ['fullBase' => true]) . '" rel="alternate" hreflang="de-ch"/>' . PHP_EOL .
+			'<link href="' . $this->Meta->Url->build('/some/url', ['fullBase' => true]) . '" rel="alternate" hreflang="de-at"/>' . PHP_EOL .
+			'<link href="' . $this->Meta->Url->build('/some/url', ['fullBase' => true]) . '" rel="alternate" hreflang="en-gb"/>' . PHP_EOL .
+			'<link href="' . $this->Meta->Url->build('/some/url', ['fullBase' => true]) . '" rel="alternate" hreflang="en-us"/>', trim($is));
 	}
 
 	/**
@@ -315,7 +315,7 @@ class MetaHelperTest extends TestCase {
 		$result = $this->Meta->out();
 
 		$expected = '<title>Controller Name - Action Name</title><meta charset="utf-8"/>';
-		$expected .= '<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>';
+		$expected .= '<link href="/favicon.ico" type="image/x-icon" rel="icon"/><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"/>';
 		$expected .= '<meta name="robots" content="noindex,nofollow,noarchive"/>';
 		$this->assertTextEquals($expected, $result);
 
@@ -334,7 +334,7 @@ class MetaHelperTest extends TestCase {
 
 		$expected = '<title>Foo</title>
 <meta charset="utf-8"/>
-<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+<link href="/favicon.ico" type="image/x-icon" rel="icon"/><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <link rel="canonical" href="/"/>
 <meta http-equiv="language" content="de"/>
 <meta name="robots" content="index,nofollow,noarchive"/>
@@ -361,7 +361,7 @@ class MetaHelperTest extends TestCase {
 
 		$expected = '<title>Controller Name - Action Name</title>
 <meta charset="utf-8"/>
-<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+<link href="/favicon.ico" type="image/x-icon" rel="icon"/><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <meta http-equiv="language" content="de"/>
 <meta name="robots" content="noindex,nofollow,noarchive"/>
 <meta name="keywords" content="foo bar" lang="de"/>
@@ -377,7 +377,7 @@ class MetaHelperTest extends TestCase {
 		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
 		$expected = '<title>Controller Name - Action Name</title>
 <meta charset="utf-8"/>
-<link href="favicon.ico" type="image/x-icon" rel="icon"/><link href="favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+<link href="/favicon.ico" type="image/x-icon" rel="icon"/><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <meta http-equiv="language" content="en"/>
 <meta name="robots" content="noindex,nofollow,noarchive"/>
 <meta name="keywords" content="foo bar EN" lang="en"/>
@@ -390,7 +390,7 @@ class MetaHelperTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 
 		unset($this->Meta);

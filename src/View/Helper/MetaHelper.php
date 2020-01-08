@@ -71,8 +71,8 @@ class MetaHelper extends Helper {
 		}
 		$this->meta = $options + $this->meta;
 
-		if (!empty($this->_View->viewVars['_meta'])) {
-			$viewVarsMeta = (array)$this->_View->viewVars['_meta'];
+		$viewVarsMeta = (array)$this->getView()->get('_meta');
+		if ($viewVarsMeta) {
 			if (!empty($viewVarsMeta['robots']) && is_array($viewVarsMeta['robots'])) {
 				$viewVarsMeta['robots'] = Hash::merge($this->meta['robots'], $viewVarsMeta['robots']);
 			}
@@ -207,6 +207,9 @@ class MetaHelper extends Helper {
 	}
 
 	/**
+	 * Specify the target audience language of the page.
+	 * Discouraged now. Instead use `lang` attribute for the html tag.
+	 *
 	 * @param string|null $value
 	 * @return string
 	 */

@@ -36,7 +36,7 @@ Cake\Core\Configure::write('debug', true);
 Cake\Core\Configure::write('Config', [
 		'adminEmail' => 'test@example.com',
 		'adminName' => 'Mark']);
-Cake\Mailer\Email::setConfig('default', ['transport' => 'Debug']);
+Cake\Mailer\Mailer::setConfig('default', ['transport' => 'Debug']);
 Cake\Mailer\TransportFactory::setConfig('Debug', [
 		'className' => 'Debug',
 ]);
@@ -71,8 +71,6 @@ $cache = [
 
 Cake\Cache\Cache::setConfig($cache);
 
-//Cake\Core\Plugin::load('Meta', ['path' => ROOT . DS]);
-
 // Ensure default test connection is defined
 if (!getenv('db_class')) {
 	putenv('db_class=Cake\Database\Driver\Sqlite');
@@ -81,11 +79,8 @@ if (!getenv('db_class')) {
 
 Cake\Datasource\ConnectionManager::setConfig('test', [
 	'className' => 'Cake\Database\Connection',
-	'driver' => getenv('db_class'),
-	'dsn' => getenv('db_dsn'),
-	'database' => getenv('db_database'),
-	'username' => getenv('db_username'),
-	'password' => getenv('db_password'),
+	'driver' => getenv('db_class') ?: null,
+	'dsn' => getenv('db_dsn') ?: null,
 	'timezone' => 'UTC',
 	'quoteIdentifiers' => true,
 	'cacheMetadata' => true,

@@ -2,10 +2,10 @@
 [![Build Status](https://api.travis-ci.org/dereuromark/cakephp-meta.svg)](https://travis-ci.org/dereuromark/cakephp-meta)
 [![Coverage Status](https://coveralls.io/repos/dereuromark/cakephp-meta/badge.svg)](https://coveralls.io/r/dereuromark/cakephp-meta)
 [![License](https://poser.pugx.org/dereuromark/cakephp-meta/license.svg)](https://packagist.org/packages/dereuromark/cakephp-meta)
-[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg)](https://php.net/)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
-This branch is for **CakePHP 3.7+**. For details see [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
+This branch is for **CakePHP 4.0+**. For details see [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
 
 ## What is this plugin for?
 This plugin helps to maintain and output meta tags for your HTML pages, including SEO relevant parts like
