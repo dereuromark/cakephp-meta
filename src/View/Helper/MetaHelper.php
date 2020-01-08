@@ -90,8 +90,9 @@ class MetaHelper extends Helper {
 		}
 
 		if ($this->meta['title'] === null) {
-			$this->meta['title'] = __(Inflector::humanize(Inflector::underscore($this->request->params['controller']))) . ' - '
-				. __(Inflector::humanize(Inflector::underscore($this->request->params['action'])));
+			$controllerName = Inflector::humanize(Inflector::underscore($this->getView()->getRequest()->getParam('controller')));
+			$actionName = Inflector::humanize(Inflector::underscore($this->getView()->getRequest()->getParam('action')));
+			$this->meta['title'] = __($controllerName) . ' - ' . __($actionName);
 		}
 	}
 
@@ -228,7 +229,7 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param string|array|null $value
+	 * @param string|array|false|null $value
 	 * @return string
 	 */
 	public function robots($value = null) {
@@ -318,7 +319,7 @@ class MetaHelper extends Helper {
 	 */
 	public function keywords($keywords = null, $lang = null) {
 		if ($keywords !== null) {
-			if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->config('multiLanguage')) {
+			if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->getConfig('multiLanguage')) {
 				return '';
 			}
 
@@ -408,22 +409,28 @@ class MetaHelper extends Helper {
 	/**
 	 * Outputs a canonical tag to the page
 	 *
-	 * @param mixed $url Canonical URL override
+	 * @param array|string|true|null $url Canonical URL override
+	 * @param bool $full
+	 *
 	 * @return string
 	 */
-	public function canonical($url = null) {
+	public function canonical($url = null, $full = false) {
 		if ($url !== null) {
 			$this->meta['canonical'] = $url;
 		}
 
 		$url = $this->meta['canonical'];
 
+		$options = [
+			'fullBase' => $full,
+		];
+
 		if ($url === true) {
-			$url = $this->request->here;
+			$url = $this->getView()->getRequest()->getAttribute('here');
 		} elseif (is_array($url)) {
-			$url = $this->Url->build($url, true);
+			$url = $this->Url->build($url, $options);
 		} elseif (!preg_match('/^(https:\/\/|http:\/\/)/', $url)) {
-			$url = $this->Url->build($url, true);
+			$url = $this->Url->build($url, $options);
 		}
 
 		$array = [

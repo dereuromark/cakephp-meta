@@ -3,7 +3,7 @@
 namespace Meta\TestCase\View\Helper;
 
 use Cake\Core\Configure;
-use Cake\Network\Request;
+use Cake\Http\ServerRequest;
 use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
@@ -44,9 +44,10 @@ class MetaHelperTest extends TestCase {
 		ini_set('intl.default_locale', 'de_DE');
 		Configure::delete('Meta');
 
-		$request = new Request();
-		$request->params['controller'] = 'ControllerName';
-		$request->params['action'] = 'actionName';
+		$request = (new ServerRequest())
+			->withParam('controller', 'ControllerName')
+			->withParam('action', 'actionName');
+
 		$this->View = new View($request);
 		$this->Meta = new MetaHelper($this->View);
 	}
@@ -77,8 +78,6 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
-	 * MetaHelperTest::testMetalanguage()
-	 *
 	 * @return void
 	 */
 	public function testMetaLanguageConfiguration() {
@@ -100,8 +99,6 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
-	 * MetaHelperTest::testMetaRobots()
-	 *
 	 * @return void
 	 */
 	public function testMetaRobots() {
@@ -119,8 +116,6 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
-	 * MetaHelperTest::testMetaRobots()
-	 *
 	 * @return void
 	 */
 	public function testMetaRobotsConfiguration() {
@@ -137,8 +132,6 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
-	 * MetaHelperTest::testMetaName()
-	 *
 	 * @return void
 	 */
 	public function _testMetaName() {
@@ -236,8 +229,6 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
-	 * MetaHelperTest::testMetaRss()
-	 *
 	 * @return void
 	 */
 	public function _testMetaRss() {

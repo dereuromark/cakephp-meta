@@ -5,6 +5,9 @@
 [![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg)](https://php.net/)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
+This branch is for **CakePHP 3.7+**. For details see [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
+
+## What is this plugin for?
 This plugin helps to maintain and output meta tags for your HTML pages, including SEO relevant parts like
 "title", "keywords", "description", "robots" and "canonical".
 

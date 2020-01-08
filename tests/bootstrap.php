@@ -36,8 +36,8 @@ Cake\Core\Configure::write('debug', true);
 Cake\Core\Configure::write('Config', [
 		'adminEmail' => 'test@example.com',
 		'adminName' => 'Mark']);
-Cake\Network\Email\Email::setConfig('default', ['transport' => 'Debug']);
-Cake\Network\Email\Email::configTransport('Debug', [
+Cake\Mailer\Email::setConfig('default', ['transport' => 'Debug']);
+Cake\Mailer\TransportFactory::setConfig('Debug', [
 		'className' => 'Debug',
 ]);
 
@@ -71,7 +71,7 @@ $cache = [
 
 Cake\Cache\Cache::setConfig($cache);
 
-Cake\Core\Plugin::load('Meta', ['path' => ROOT . DS]);
+//Cake\Core\Plugin::load('Meta', ['path' => ROOT . DS]);
 
 // Ensure default test connection is defined
 if (!getenv('db_class')) {
