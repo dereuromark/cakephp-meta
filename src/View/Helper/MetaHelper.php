@@ -112,6 +112,7 @@ class MetaHelper extends Helper {
 		if (strpos($locale, '_') !== false) {
 			$locale = str_replace('_', '-', $locale);
 		}
+
 		return $locale;
 	}
 
@@ -203,6 +204,7 @@ class MetaHelper extends Helper {
 			'url' => $url,
 			'attrs' => $this->Html->templater()->formatAttributes($options, ['prefix', 'size']),
 		];
+
 		return $this->Html->templater()->format('metalink', $array);
 	}
 
@@ -228,6 +230,7 @@ class MetaHelper extends Helper {
 			'http-equiv' => 'language',
 			'content' => $language,
 		];
+
 		return $this->Html->meta($array);
 	}
 
@@ -298,6 +301,7 @@ class MetaHelper extends Helper {
 				}
 				$res[] = $this->description($content, $lang);
 			}
+
 			return implode('', $res);
 		}
 
@@ -312,6 +316,7 @@ class MetaHelper extends Helper {
 			'content' => $description,
 			'lang' => $lang !== '*' ? $lang : null,
 		];
+
 		return $this->Html->meta($array);
 	}
 
@@ -353,6 +358,7 @@ class MetaHelper extends Helper {
 				}
 				$res[] = $this->keywords($keywords, $lang);
 			}
+
 			return implode('', $res);
 		}
 
@@ -371,14 +377,15 @@ class MetaHelper extends Helper {
 			'content' => $keywords,
 			'lang' => $lang !== '*' ? $lang : null,
 		];
+
 		return $this->Html->meta($array);
 	}
 
 	/**
 	 * @param string|null $name
 	 * @param string|null $value
-	 * @return string
 	 * @throws \Exception
+	 * @return string
 	 */
 	public function custom($name = null, $value = null) {
 		if ($value !== null) {
@@ -394,6 +401,7 @@ class MetaHelper extends Helper {
 			foreach ($this->meta['custom'] as $name => $content) {
 				$res[] = $this->custom($name, $content);
 			}
+
 			return implode('', $res);
 		}
 
@@ -406,6 +414,7 @@ class MetaHelper extends Helper {
 			'name' => $name,
 			'content' => $value,
 		];
+
 		return $this->Html->meta($array);
 	}
 
@@ -440,14 +449,15 @@ class MetaHelper extends Helper {
 			'url' => $url,
 			'rel' => 'canonical',
 		];
+
 		return $this->Html->templater()->format('css', $array);
 	}
 
 	/**
 	 * @param string|null $type
 	 * @param string|null $value
-	 * @return string
 	 * @throws \Exception
+	 * @return string
 	 */
 	public function httpEquiv($type = null, $value = null) {
 		if ($value !== null) {
@@ -463,6 +473,7 @@ class MetaHelper extends Helper {
 			foreach ($this->meta['http-equiv'] as $type => $content) {
 				$res[] = $this->httpEquiv($type, $content);
 			}
+
 			return implode('', $res);
 		}
 
@@ -475,6 +486,7 @@ class MetaHelper extends Helper {
 			'http-equiv' => $type,
 			'content' => $value,
 		];
+
 		return $this->Html->meta($array);
 	}
 
