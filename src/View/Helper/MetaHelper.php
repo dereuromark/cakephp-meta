@@ -20,7 +20,7 @@ class MetaHelper extends Helper {
 	 *
 	 * @var array
 	 */
-	public $helpers = ['Html', 'Url'];
+	protected $helpers = ['Html', 'Url'];
 
 	/**
 	 * Default config.
