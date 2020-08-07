@@ -90,9 +90,13 @@ class MetaHelper extends Helper {
 		}
 
 		if ($this->meta['title'] === null) {
-			$controllerName = Inflector::humanize(Inflector::underscore($this->getView()->getRequest()->getParam('controller')));
-			$actionName = Inflector::humanize(Inflector::underscore($this->getView()->getRequest()->getParam('action')));
-			$this->meta['title'] = __($controllerName) . ' - ' . __($actionName);
+			$controller = $this->getView()->getRequest()->getParam('controller');
+			$action = $this->getView()->getRequest()->getParam('action');
+			if ($controller && $action) {
+				$controllerName = Inflector::humanize(Inflector::underscore($controller));
+				$actionName = Inflector::humanize(Inflector::underscore($action));
+				$this->meta['title'] = __($controllerName) . ' - ' . __($actionName);
+			}
 		}
 	}
 
