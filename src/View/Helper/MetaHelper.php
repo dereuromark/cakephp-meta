@@ -25,18 +25,18 @@ class MetaHelper extends Helper {
 	/**
 	 * Default config.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
-	public $_defaultConfig = [
+	protected $_defaultConfig = [
 		'multiLanguage' => true, // Disable to only display the localized tag to the current language
 	];
 
 	/**
 	 * Meta headers for the response
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
-	public $meta = [
+	protected $meta = [
 		'title' => null,
 		'charset' => null,
 		'icon' => null,
@@ -57,7 +57,7 @@ class MetaHelper extends Helper {
 	 * @param \Cake\View\View $View
 	 * @param array $options
 	 */
-	public function __construct(View $View, $options = []) {
+	public function __construct(View $View, array $options = []) {
 		parent::__construct($View, $options);
 
 		$configureMeta = (array)Configure::read('Meta');
@@ -180,7 +180,7 @@ class MetaHelper extends Helper {
 	/**
 	 * @param string $url
 	 * @param int $size
-	 * @param array $options
+	 * @param array<string, mixed> $options
 	 * @return string
 	 */
 	public function sizesIcon($url, $size, array $options = []) {
@@ -192,6 +192,7 @@ class MetaHelper extends Helper {
 			$this->meta['sizesIcon'][$url] = $options;
 		}
 
+		/** @var array<string, mixed>|bool $value */
 		$value = $this->meta['sizesIcon'][$url];
 		if ($value === false) {
 			return '';
@@ -239,7 +240,7 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param string|array|false|null $value
+	 * @param array|string|false|null $value
 	 * @return string
 	 */
 	public function robots($value = null) {
@@ -293,6 +294,7 @@ class MetaHelper extends Helper {
 		}
 
 		if ($lang === null) {
+			/** @var array<string, string> $description */
 			$description = $this->meta['description'];
 
 			$res = [];
@@ -309,7 +311,7 @@ class MetaHelper extends Helper {
 			return implode('', $res);
 		}
 
-		$description = isset($this->meta['description'][$lang]) ? $this->meta['description'][$lang] : false;
+		$description = $this->meta['description'][$lang] ?? false;
 
 		if ($description === false) {
 			return '';
@@ -325,7 +327,7 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param string|array|null $keywords
+	 * @param array<string>|string|null $keywords
 	 * @param string|null $lang
 	 * @return string
 	 */
@@ -366,7 +368,7 @@ class MetaHelper extends Helper {
 			return implode('', $res);
 		}
 
-		$keywords = isset($this->meta['keywords'][$lang]) ? $this->meta['keywords'][$lang] : false;
+		$keywords = $this->meta['keywords'][$lang] ?? false;
 
 		if ($keywords === false) {
 			return '';
@@ -567,7 +569,8 @@ class MetaHelper extends Helper {
 			}
 
 			$meta = ['name' => $header, 'content' => $this->meta[$header]];
-			if (($pos = strpos($header, ':')) !== false) {
+			$pos = strpos($header, ':');
+			if ($pos !== false) {
 				$meta['name'] = substr($header, $pos + 1);
 				$meta['property'] = $header;
 			}
