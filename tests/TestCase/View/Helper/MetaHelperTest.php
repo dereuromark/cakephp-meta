@@ -16,15 +16,9 @@ use Meta\View\Helper\MetaHelper;
  */
 class MetaHelperTest extends TestCase {
 
-	/**
-	 * @var \Meta\View\Helper\MetaHelper
-	 */
-	protected $Meta;
+	protected MetaHelper $Meta;
 
-	/**
-	 * @var \Cake\View\View
-	 */
-	protected $View;
+	protected View $View;
 
 	/**
 	 * @var string
@@ -51,7 +45,7 @@ class MetaHelperTest extends TestCase {
 		$this->View = new View($request);
 		$this->Meta = new MetaHelper($this->View);
 
-		Router::plugin('Meta', function (RouteBuilder $routes) {
+		Router::plugin('Meta', function (RouteBuilder $routes): void {
 			$routes->fallbacks(DashedRoute::class);
 		});
 	}

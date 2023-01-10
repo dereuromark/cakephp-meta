@@ -20,14 +20,14 @@ class MetaHelper extends Helper {
 	 *
 	 * @var array
 	 */
-	protected $helpers = ['Html', 'Url'];
+	protected array $helpers = ['Html', 'Url'];
 
 	/**
 	 * Default config.
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected $_defaultConfig = [
+	protected array $_defaultConfig = [
 		'multiLanguage' => true, // Disable to only display the localized tag to the current language
 	];
 
@@ -36,7 +36,7 @@ class MetaHelper extends Helper {
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected $meta = [
+	protected array $meta = [
 		'title' => null,
 		'charset' => null,
 		'icon' => null,
