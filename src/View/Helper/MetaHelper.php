@@ -43,6 +43,7 @@ class MetaHelper extends Helper {
 		'canonical' => null, // Set to true for auto-detect
 		'language' => null, // Set to true for auto-detect
 		'robots' => ['index' => false, 'follow' => false, 'archive' => false],
+		'description' => null,
 	];
 
 	/**
