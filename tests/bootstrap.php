@@ -1,4 +1,12 @@
 <?php
+
+use Cake\Cache\Cache;
+use Cake\Core\Configure;
+use Cake\Datasource\ConnectionManager;
+use Cake\Filesystem\Folder;
+use Cake\Mailer\Mailer;
+use Cake\Mailer\TransportFactory;
+
 if (!defined('DS')) {
 	define('DS', DIRECTORY_SEPARATOR);
 }
@@ -28,22 +36,22 @@ ini_set('intl.default_locale', 'de-DE');
 require ROOT . '/vendor/autoload.php';
 require CORE_PATH . 'config/bootstrap.php';
 
-Cake\Core\Configure::write('App', [
+Configure::write('App', [
 		'namespace' => 'App',
 		'encoding' => 'UTF-8']);
-Cake\Core\Configure::write('debug', true);
+Configure::write('debug', true);
 
-Cake\Core\Configure::write('Config', [
+Configure::write('Config', [
 		'adminEmail' => 'test@example.com',
 		'adminName' => 'Mark']);
-Cake\Mailer\Mailer::setConfig('default', ['transport' => 'Debug']);
-Cake\Mailer\TransportFactory::setConfig('Debug', [
+Mailer::setConfig('default', ['transport' => 'Debug']);
+TransportFactory::setConfig('Debug', [
 		'className' => 'Debug',
 ]);
 
 mb_internal_encoding('UTF-8');
 
-$Tmp = new Cake\Filesystem\Folder(TMP);
+$Tmp = new Folder(TMP);
 $Tmp->create(TMP . 'cache/models', 0770);
 $Tmp->create(TMP . 'cache/persistent', 0770);
 $Tmp->create(TMP . 'cache/views', 0770);
@@ -69,7 +77,7 @@ $cache = [
 	],
 ];
 
-Cake\Cache\Cache::setConfig($cache);
+Cache::setConfig($cache);
 
 // Ensure default test connection is defined
 if (!getenv('db_class')) {
@@ -77,7 +85,7 @@ if (!getenv('db_class')) {
 	putenv('db_dsn=sqlite::memory:');
 }
 
-Cake\Datasource\ConnectionManager::setConfig('test', [
+ConnectionManager::setConfig('test', [
 	'className' => 'Cake\Database\Connection',
 	'driver' => getenv('db_class') ?: null,
 	'dsn' => getenv('db_dsn') ?: null,
