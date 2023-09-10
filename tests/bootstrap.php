@@ -3,7 +3,6 @@
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
-use Cake\Filesystem\Folder;
 use Cake\Mailer\Mailer;
 use Cake\Mailer\TransportFactory;
 
@@ -35,6 +34,7 @@ ini_set('intl.default_locale', 'de-DE');
 
 require ROOT . '/vendor/autoload.php';
 require CORE_PATH . 'config/bootstrap.php';
+require CAKE . 'functions.php';
 
 Configure::write('App', [
 		'namespace' => 'App',
@@ -51,10 +51,12 @@ TransportFactory::setConfig('Debug', [
 
 mb_internal_encoding('UTF-8');
 
+/*
 $Tmp = new Folder(TMP);
 $Tmp->create(TMP . 'cache/models', 0770);
 $Tmp->create(TMP . 'cache/persistent', 0770);
 $Tmp->create(TMP . 'cache/views', 0770);
+*/
 
 $cache = [
 	'default' => [
