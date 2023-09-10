@@ -332,8 +332,8 @@ class MetaHelperTest extends TestCase {
 <link rel="canonical" href="/"/>
 <meta http-equiv="language" content="de"/>
 <meta name="robots" content="index,nofollow,noarchive"/>
-<meta name="keywords" content="foo bar" lang="de"/><meta name="keywords" content="foo bar EN" lang="en"/>
 <meta name="description" content="A sentence" lang="de"/>
+<meta name="keywords" content="foo bar" lang="de"/><meta name="keywords" content="foo bar EN" lang="en"/>
 <meta name="http-equiv" content="0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="x" content="y"/>';
 		$this->assertTextEquals($expected, $result);
@@ -358,8 +358,8 @@ class MetaHelperTest extends TestCase {
 <link href="/favicon.ico" type="image/x-icon" rel="icon"/><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <meta http-equiv="language" content="de"/>
 <meta name="robots" content="noindex,nofollow,noarchive"/>
-<meta name="keywords" content="foo bar" lang="de"/>
-<meta name="description" content="A sentence" lang="de"/>';
+<meta name="description" content="A sentence" lang="de"/>
+<meta name="keywords" content="foo bar" lang="de"/>';
 		$this->assertTextEquals($expected, $result);
 
 		$this->Meta->language('en');
@@ -374,8 +374,8 @@ class MetaHelperTest extends TestCase {
 <link href="/favicon.ico" type="image/x-icon" rel="icon"/><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
 <meta http-equiv="language" content="en"/>
 <meta name="robots" content="noindex,nofollow,noarchive"/>
-<meta name="keywords" content="foo bar EN" lang="en"/>
-<meta name="description" content="A sentence EN" lang="en"/>';
+<meta name="description" content="A sentence EN" lang="en"/>
+<meta name="keywords" content="foo bar EN" lang="en"/>';
 		$this->assertTextEquals($expected, $result);
 	}
 

@@ -6,14 +6,14 @@
 		<!-- E_ALL => 32767 -->
 		<!-- E_ALL & ~E_USER_DEPRECATED => 16383 -->
 		<ini name="error_reporting" value="16383"/>
-    </php>
+	</php>
 
-    <!-- Add any additional test suites you want to run here -->
-    <testsuites>
-        <testsuite name="meta">
-            <directory>tests/TestCase/</directory>
-        </testsuite>
-    </testsuites>
+	<!-- Add any additional test suites you want to run here -->
+	<testsuites>
+		<testsuite name="meta">
+			<directory>tests/TestCase/</directory>
+		</testsuite>
+	</testsuites>
 
     <!-- Prevent coverage reports from looking in tests and vendors -->
     <source>

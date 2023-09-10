@@ -43,6 +43,7 @@ class MetaHelper extends Helper {
 		'canonical' => null, // Set to true for auto-detect
 		'language' => null, // Set to true for auto-detect
 		'robots' => ['index' => false, 'follow' => false, 'archive' => false],
+		'description' => null,
 	];
 
 	/**
@@ -174,7 +175,7 @@ class MetaHelper extends Helper {
 			$value = null;
 		}
 
-		return $this->Html->meta('icon', $value);
+		return (string)$this->Html->meta('icon', $value);
 	}
 
 	/**
@@ -198,7 +199,7 @@ class MetaHelper extends Helper {
 			return '';
 		}
 		if ($value === true) {
-			$value = null;
+			$value = $options;
 		}
 
 		$options = [
@@ -236,7 +237,7 @@ class MetaHelper extends Helper {
 			'content' => $language,
 		];
 
-		return $this->Html->meta($array);
+		return (string)$this->Html->meta($array);
 	}
 
 	/**
@@ -266,7 +267,7 @@ class MetaHelper extends Helper {
 			$robots = implode(',', $robots);
 		}
 
-		return $this->Html->meta('robots', $robots);
+		return (string)$this->Html->meta('robots', $robots);
 	}
 
 	/**
@@ -323,7 +324,7 @@ class MetaHelper extends Helper {
 			'lang' => $lang !== '*' ? $lang : null,
 		];
 
-		return $this->Html->meta($array);
+		return (string)$this->Html->meta($array);
 	}
 
 	/**
@@ -352,17 +353,18 @@ class MetaHelper extends Helper {
 		}
 
 		if ($lang === null) {
+			/** @var array<string, mixed> $keywords */
 			$keywords = $this->meta['keywords'];
 
 			$res = [];
-			foreach ($keywords as $lang => $keywords) {
+			foreach ($keywords as $lang => $keyword) {
 				if ($lang === '*') {
 					$lang = null;
 					if (count($this->meta['keywords']) > 1) {
 						continue;
 					}
 				}
-				$res[] = $this->keywords($keywords, $lang);
+				$res[] = $this->keywords($keyword, $lang);
 			}
 
 			return implode('', $res);
@@ -384,7 +386,7 @@ class MetaHelper extends Helper {
 			'lang' => $lang !== '*' ? $lang : null,
 		];
 
-		return $this->Html->meta($array);
+		return (string)$this->Html->meta($array);
 	}
 
 	/**
@@ -421,7 +423,7 @@ class MetaHelper extends Helper {
 			'content' => $value,
 		];
 
-		return $this->Html->meta($array);
+		return (string)$this->Html->meta($array);
 	}
 
 	/**
@@ -493,7 +495,7 @@ class MetaHelper extends Helper {
 			'content' => $value,
 		];
 
-		return $this->Html->meta($array);
+		return (string)$this->Html->meta($array);
 	}
 
 	/**
@@ -575,7 +577,7 @@ class MetaHelper extends Helper {
 				$meta['property'] = $header;
 			}
 
-			return $this->Html->meta($meta);
+			return (string)$this->Html->meta($meta);
 		}
 
 		$results = [];
