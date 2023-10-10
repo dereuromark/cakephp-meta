@@ -10,6 +10,7 @@ use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use Meta\View\Helper\MetaHelper;
+use RuntimeException;
 
 /**
  * MetaHelper tests
@@ -57,22 +58,18 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testMetaLanguage() {
-		$result = $this->Meta->language();
+		$result = $this->Meta->getLanguage();
 		$expected = '';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->language(true);
+		$this->Meta->setLanguage(null);
+		$result = $this->Meta->getLanguage();
 		$expected = '<meta http-equiv="language" content="de-DE">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->language();
-		$this->assertEquals($expected, $result);
-
-		$result = $this->Meta->language('deu');
+		$this->Meta->setLanguage('deu');
+		$result = $this->Meta->getLanguage();
 		$expected = '<meta http-equiv="language" content="deu">';
-		$this->assertEquals($expected, $result);
-
-		$result = $this->Meta->language();
 		$this->assertEquals($expected, $result);
 	}
 
@@ -84,15 +81,16 @@ class MetaHelperTest extends TestCase {
 
 		$this->Meta = new MetaHelper($this->View, ['language' => true]);
 
-		$result = $this->Meta->language();
+		$result = $this->Meta->getLanguage();
 		$expected = '<meta http-equiv="language" content="en-US">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->language('en');
+		$this->Meta->setLanguage('en');
+		$result = $this->Meta->getLanguage();
 		$expected = '<meta http-equiv="language" content="en">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->language();
+		$result = $this->Meta->getLanguage();
 		$this->assertEquals($expected, $result);
 	}
 
@@ -100,16 +98,19 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testMetaRobots() {
-		$result = $this->Meta->robots();
+		$result = $this->Meta->getRobots();
 		$this->assertEquals('<meta name="robots" content="noindex,nofollow,noarchive">', $result);
 
-		$result = $this->Meta->robots(['index' => true]);
+		$this->Meta->setRobots(['index' => true]);
+		$result = $this->Meta->getRobots();
 		$this->assertEquals('<meta name="robots" content="index,nofollow,noarchive">', $result);
 
-		$result = $this->Meta->robots('noindex,nofollow,archive');
+		$this->Meta->setRobots('noindex,nofollow,archive');
+		$result = $this->Meta->getRobots();
 		$this->assertEquals('<meta name="robots" content="noindex,nofollow,archive">', $result);
 
-		$result = $this->Meta->robots(false);
+		$this->Meta->setRobots(false);
+		$result = $this->Meta->getRobots();
 		$this->assertEquals('', $result);
 	}
 
@@ -121,10 +122,11 @@ class MetaHelperTest extends TestCase {
 		$options = ['robots' => ['follow' => true]];
 		$this->Meta = new MetaHelper($this->View, $options);
 
-		$result = $this->Meta->robots();
+		$result = $this->Meta->getRobots();
 		$this->assertEquals('<meta name="robots" content="index,follow,noarchive">', $result);
 
-		$result = $this->Meta->robots(['index' => false]);
+		$this->Meta->setRobots(['index' => false]);
+		$result = $this->Meta->getRobots();
 		$this->assertEquals('<meta name="robots" content="noindex,follow,noarchive">', $result);
 	}
 
@@ -141,18 +143,19 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testMetaDescription() {
-		$result = $this->Meta->description('descr');
+		$result = $this->Meta->getDescription();
+		$expected = '';
+		$this->assertEquals($expected, $result);
+
+		$this->Meta->setDescription('descr');
+		$result = $this->Meta->getDescription();
 		$expected = '<meta name="description" content="descr">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->description();
-		$this->assertEquals($expected, $result);
+		$this->Meta->setDescription('foo', 'deu');
 
-		$result = $this->Meta->description('foo', 'deu');
-		$expected = '<meta name="description" content="foo" lang="deu">';
-		$this->assertEquals($expected, $result);
-
-		$result = $this->Meta->description();
+		$result = $this->Meta->getDescription();
+		$expected = '<meta name="description" content="descr foo" lang="deu">';
 		$this->assertEquals($expected, $result);
 	}
 
@@ -163,7 +166,7 @@ class MetaHelperTest extends TestCase {
 		$this->View->set('_meta', ['description' => 'Foo Bar']);
 		$this->Meta = new MetaHelper($this->View);
 
-		$result = $this->Meta->description();
+		$result = $this->Meta->getDescription();
 		$expected = '<meta name="description" content="Foo Bar">';
 		$this->assertEquals($expected, $result);
 	}
@@ -174,41 +177,45 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testMetaKeywords() {
-		$result = $this->Meta->keywords('mystring');
+		$this->Meta->setKeywords('mystring');
+		$result = $this->Meta->getKeywords();
 		$expected = '<meta name="keywords" content="mystring">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->keywords(['foo', 'bar']);
+		$this->Meta->setKeywords(['foo', 'bar']);
+		$result = $this->Meta->getKeywords();
 		$expected = '<meta name="keywords" content="foo,bar">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->keywords();
+		$result = $this->Meta->getKeywords();
 		$this->assertEquals($expected, $result);
 
 		// Locale keywords trump global ones
-		$result = $this->Meta->keywords(['fooD', 'barD'], 'deu');
+		$this->Meta->setKeywords(['fooD', 'barD'], 'deu');
+		$result = $this->Meta->getKeywords('deu');
 		$expected = '<meta name="keywords" content="fooD,barD" lang="deu">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->keywords();
+		$result = $this->Meta->getKeywords();
 		$this->assertEquals($expected, $result);
 
 		// But you can force-get them
-		$result = $this->Meta->keywords(null, '*');
+		$result = $this->Meta->getKeywords('*');
 		$expected = '<meta name="keywords" content="foo,bar">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->keywords(['fooE', 'barE'], 'eng');
+		$this->Meta->setKeywords(['fooE', 'barE'], 'eng');
+		$result = $this->Meta->getKeywords('eng');
 		$expected = '<meta name="keywords" content="fooE,barE" lang="eng">';
 		$this->assertEquals($expected, $result);
 
 		// Having multiple locale keywords combines them
-		$result = $this->Meta->keywords();
+		$result = $this->Meta->getKeywords();
 		$expected = '<meta name="keywords" content="fooD,barD" lang="deu"><meta name="keywords" content="fooE,barE" lang="eng">';
 		$this->assertEquals($expected, $result);
 
 		// Retrieve a specific one
-		$result = $this->Meta->keywords(null, 'eng');
+		$result = $this->Meta->getKeywords('eng');
 		$expected = '<meta name="keywords" content="fooE,barE" lang="eng">';
 		$this->assertEquals($expected, $result);
 	}
@@ -220,7 +227,7 @@ class MetaHelperTest extends TestCase {
 		$this->View->set('_meta', ['keywords' => 'Foo,Bar']);
 		$this->Meta = new MetaHelper($this->View);
 
-		$result = $this->Meta->keywords();
+		$result = $this->Meta->getKeywords();
 		$expected = '<meta name="keywords" content="Foo,Bar">';
 		$this->assertEquals($expected, $result);
 	}
@@ -238,17 +245,17 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testSizesIcon() {
-		$result = $this->Meta->sizesIcon('/favicon-32x32.png', 32);
-		$expected = '<link href="/favicon-32x32.png" rel="icon" sizes="32x32">';
-		$this->assertEquals($expected, $result);
+		$this->Meta->setSizesIcon('/favicon-16x16.png', 16);
+		$expected1 = '<link href="/favicon-16x16.png" rel="icon" sizes="16x16">';
 
-		$result = $this->Meta->sizesIcon('/favicon-32x32.png', 32, ['type' => 'image/png']);
-		$expected = '<link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">';
-		$this->assertEquals($expected, $result);
+		$this->Meta->setSizesIcon('/favicon-32x32.png', 32, ['type' => 'image/png']);
+		$expected2 = '<link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">';
 
-		$result = $this->Meta->sizesIcon('/apple-touch-icon-57x57.png', 57, ['prefix' => 'apple-touch-']);
-		$expected = '<link href="/apple-touch-icon-57x57.png" rel="apple-touch-icon" sizes="57x57">';
-		$this->assertEquals($expected, $result);
+		$this->Meta->setSizesIcon('/apple-touch-icon-57x57.png', 57, ['prefix' => 'apple-touch-']);
+		$expected3 = '<link href="/apple-touch-icon-57x57.png" rel="apple-touch-icon" sizes="57x57">';
+
+		$result = $this->Meta->getSizesIcons();
+		$this->assertEquals($expected1 . PHP_EOL . $expected2 . PHP_EOL . $expected3, $result);
 	}
 
 	/**
@@ -257,20 +264,23 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testMetaHttpEquiv() {
-		$result = $this->Meta->httpEquiv('expires', '0');
+		$this->Meta->setHttpEquiv('expires', '0');
+		$result = $this->Meta->getHttpEquiv();
 		$expected = '<meta http-equiv="expires" content="0">';
 		$this->assertEquals($expected, $result);
 
-		$result = $this->Meta->httpEquiv('foo', 'bar');
-		$expected = '<meta http-equiv="foo" content="bar">';
-		$this->assertEquals($expected, $result);
-
-		$result = $this->Meta->httpEquiv('expires');
-		$expected = '<meta http-equiv="expires" content="0">';
-		$this->assertEquals($expected, $result);
-
-		$result = $this->Meta->httpEquiv();
+		$this->Meta->setHttpEquiv('foo', 'bar');
+		$result = $this->Meta->getHttpEquiv();
 		$expected = '<meta http-equiv="expires" content="0"><meta http-equiv="foo" content="bar">';
+		$this->assertEquals($expected, $result);
+
+		$result = $this->Meta->getHttpEquiv();
+		$expected = '<meta http-equiv="expires" content="0"><meta http-equiv="foo" content="bar">';
+		$this->assertEquals($expected, $result);
+
+		$this->Meta->setHttpEquiv('expires', false);
+		$result = $this->Meta->getHttpEquiv();
+		$expected = '<meta http-equiv="foo" content="bar">';
 		$this->assertEquals($expected, $result);
 	}
 
@@ -278,10 +288,12 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testMetaCanonical() {
-		$is = $this->Meta->canonical('/some/url/param1');
+		$this->Meta->setCanonical('/some/url/param1');
+		$is = $this->Meta->getCanonical();
 		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build('/some/url/param1', ['fullBase' => true]) . '">', $is);
 
-		$is = $this->Meta->canonical(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], true);
+		$this->Meta->setCanonical(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], true);
+		$is = $this->Meta->getCanonical();
 		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], ['fullBase' => true]) . '">', $is);
 	}
 
@@ -316,14 +328,15 @@ class MetaHelperTest extends TestCase {
 		$expected .= '<meta name="robots" content="noindex,nofollow,noarchive">';
 		$this->assertTextEquals($expected, $result);
 
-		$this->Meta->title('Foo');
-		$this->Meta->canonical(true);
-		$this->Meta->language('de');
-		$this->Meta->keywords('foo bar');
-		$this->Meta->keywords('foo bar EN', 'en');
-		$this->Meta->description('A sentence');
-		$this->Meta->httpEquiv('expires', '0');
-		$this->Meta->robots(['index' => true]);
+		$this->Meta->setCharset('utf-8');
+		$this->Meta->setTitle('Foo');
+		$this->Meta->setCanonical(true);
+		$this->Meta->setLanguage('de');
+		$this->Meta->setKeywords('foo bar');
+		$this->Meta->setKeywords('foo bar EN', 'en');
+		$this->Meta->setDescription('A sentence');
+		$this->Meta->setHttpEquiv('expires', '0');
+		$this->Meta->setRobots(['index' => true]);
 		$this->Meta->custom('viewport', 'width=device-width, initial-scale=1');
 		$this->Meta->custom('x', 'y');
 
@@ -348,38 +361,15 @@ class MetaHelperTest extends TestCase {
 	public function testOutMultiLanguageFalse() {
 		$this->Meta->setConfig('multiLanguage', false);
 
-		$this->Meta->language('de');
-		$this->Meta->keywords('foo bar');
-		$this->Meta->keywords('foo bar EN', 'en');
-		$this->Meta->description('A sentence', 'de');
-		$this->Meta->description('A sentence EN', 'en');
+		$this->Meta->setLanguage('de');
 
-		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
+		$this->expectException(RuntimeException::class);
 
-		$expected = '<title>Controller Name - Action Name</title>
-<meta charset="utf-8">
-<link href="/favicon.ico" type="image/x-icon" rel="icon"><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
-<meta http-equiv="language" content="de">
-<meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="description" content="A sentence" lang="de">
-<meta name="keywords" content="foo bar" lang="de">';
-		$this->assertTextEquals($expected, $result);
+		$this->Meta->setKeywords('foo bar');
+		$this->Meta->setKeywords('foo bar EN', 'en');
 
-		$this->Meta->language('en');
-		$this->Meta->keywords('foo bar');
-		$this->Meta->keywords('foo bar EN', 'en');
-		$this->Meta->description('A sentence', 'de');
-		$this->Meta->description('A sentence EN', 'en');
-
-		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
-		$expected = '<title>Controller Name - Action Name</title>
-<meta charset="utf-8">
-<link href="/favicon.ico" type="image/x-icon" rel="icon"><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
-<meta http-equiv="language" content="en">
-<meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="description" content="A sentence EN" lang="en">
-<meta name="keywords" content="foo bar EN" lang="en">';
-		$this->assertTextEquals($expected, $result);
+		$this->Meta->setDescription('A sentence', 'de');
+		$this->Meta->setDescription('A sentence EN', 'en');
 	}
 
 	/**

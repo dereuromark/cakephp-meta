@@ -8,6 +8,7 @@ use Cake\Utility\Inflector;
 use Cake\View\Helper;
 use Cake\View\View;
 use Exception;
+use RuntimeException;
 
 /**
  * @property \Cake\View\Helper\HtmlHelper $Html
@@ -56,7 +57,7 @@ class MetaHelper extends Helper {
 	 * in that order (the latter trumps)
 	 *
 	 * @param \Cake\View\View $View
-	 * @param array $options
+	 * @param array<string, mixed> $options
 	 */
 	public function __construct(View $View, array $options = []) {
 		parent::__construct($View, $options);
@@ -108,7 +109,7 @@ class MetaHelper extends Helper {
 	 *
 	 * @return string|null
 	 */
-	protected function _guessLanguage() {
+	protected function _guessLanguage(): ?string {
 		$locale = ini_get('intl.default_locale');
 		if (!$locale) {
 			return null;
@@ -122,14 +123,17 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param string|null $value
+	 * @param string $value
+	 * @return void
+	 */
+	public function setTitle(string $value): void {
+		$this->meta['title'] = $value;
+	}
+
+	/**
 	 * @return string
 	 */
-	public function title($value = null) {
-		if ($value !== null) {
-			$this->meta['title'] = $value;
-		}
-
+	public function getTitle(): string {
 		$value = $this->meta['title'];
 		if ($value === false) {
 			return '';
@@ -139,14 +143,17 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param string|null $value
+	 * @param string $value
+	 * @return void
+	 */
+	public function setCharset(string $value): void {
+		$this->meta['charset'] = $value;
+	}
+
+	/**
 	 * @return string
 	 */
-	public function charset($value = null) {
-		if ($value !== null) {
-			$this->meta['charset'] = $value;
-		}
-
+	public function getCharset(): string {
 		$value = $this->meta['charset'];
 		if ($value === false) {
 			return '';
@@ -159,14 +166,17 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param string|null $value
+	 * @param string $value
+	 * @return void
+	 */
+	public function setIcon(string $value): void {
+		$this->meta['icon'] = $value;
+	}
+
+	/**
 	 * @return string
 	 */
-	public function icon($value = null) {
-		if ($value !== null) {
-			$this->meta['icon'] = $value;
-		}
-
+	public function getIcon(): string {
 		$value = $this->meta['icon'];
 		if ($value === false) {
 			return '';
@@ -182,30 +192,29 @@ class MetaHelper extends Helper {
 	 * @param string $url
 	 * @param int $size
 	 * @param array<string, mixed> $options
+	 * @return void
+	 */
+	public function setSizesIcon(string $url, int $size, array $options = []): void {
+		$options += [
+			'size' => $size,
+			'prefix' => null,
+		];
+		$this->meta['sizesIcon'][$url] = $options;
+	}
+
+	/**
+	 * @param string $url
+	 *
 	 * @return string
 	 */
-	public function sizesIcon($url, $size, array $options = []) {
-		if ($url !== null) {
-			$options += [
-				'size' => $size,
-				'prefix' => null,
-			];
-			$this->meta['sizesIcon'][$url] = $options;
-		}
-
-		/** @var array<string, mixed>|bool $value */
+	public function getSizesIcon(string $url): string {
+		/** @var array<string, mixed> $value */
 		$value = $this->meta['sizesIcon'][$url];
-		if ($value === false) {
-			return '';
-		}
-		if ($value === true) {
-			$value = $options;
-		}
 
 		$options = [
 			'rel' => $value['prefix'] . 'icon',
 			'sizes' => $value['size'] . 'x' . $value['size'],
-		] + $options;
+		] + $value;
 		$array = [
 			'url' => $url,
 			'attrs' => $this->Html->templater()->formatAttributes($options, ['prefix', 'size']),
@@ -215,50 +224,73 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * Specify the target audience language of the page.
-	 * Discouraged now. Instead use `lang` attribute for the html tag.
-	 *
-	 * @param string|null $value
 	 * @return string
 	 */
-	public function language($value = null) {
-		if ($value !== null) {
-			$this->meta['language'] = $value;
+	public function getSizesIcons(): string {
+		/** @var array<string, array<string, mixed>> $sizesIcons */
+		$sizesIcons = $this->meta['sizesIcon'] ?? [];
+
+		$icons = [];
+		foreach ($sizesIcons as $url => $options) {
+			$icons[] = $this->getSizesIcon($url);
 		}
 
-		$language = $this->meta['language'] === true ? $this->_guessLanguage() : $this->meta['language'];
+		return implode(PHP_EOL, $icons);
+	}
 
-		if (!$language) {
+	/**
+	 * @param string|null $value
+	 * @return void
+	 */
+	public function setLanguage(string|null $value): void {
+		if ($value === null) {
+			$value = true;
+		}
+
+		$this->meta['language'] = $value;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLanguage(): string {
+		$value = $this->meta['language'];
+		if (!$value) {
 			return '';
+		}
+
+		if ($value === true) {
+			$value = $this->_guessLanguage();
 		}
 
 		$array = [
 			'http-equiv' => 'language',
-			'content' => $language,
+			'content' => $value,
 		];
 
 		return (string)$this->Html->meta($array);
 	}
 
 	/**
-	 * @param array|string|false|null $value
+	 * @param array<string>|string|false $value
+	 * @return void
+	 */
+	public function setRobots(array|string|false $value): void {
+		if (is_array($value)) {
+			$defaults = $this->meta['robots'];
+			$value += $defaults;
+		}
+		$this->meta['robots'] = $value;
+	}
+
+	/**
 	 * @return string
 	 */
-	public function robots($value = null) {
-		if ($value === false) {
+	public function getRobots(): string {
+		$robots = $this->meta['robots'];
+		if ($robots === false) {
 			return '';
 		}
-
-		if ($value !== null) {
-			$robots = $value;
-			if (is_array($value)) {
-				$defaults = $this->meta['robots'];
-				$robots += $defaults;
-			}
-			$this->meta['robots'] = $robots;
-		}
-
-		$robots = $this->meta['robots'];
 
 		if (is_array($robots)) {
 			foreach ($robots as $robot => $use) {
@@ -271,22 +303,27 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param string|null $description
+	 * @param string $value
+	 * @param string|null $lang
+	 * @return void
+	 */
+	public function setDescription(string $value, ?string $lang = null): void {
+		if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->getConfig('multiLanguage')) {
+			throw new RuntimeException('Not configured as multi-language');
+		}
+
+		if ($lang === null) {
+			$lang = $this->meta['language'] ?: '*';
+		}
+
+		$this->meta['description'][$lang] = $value;
+	}
+
+	/**
 	 * @param string|null $lang
 	 * @return string
 	 */
-	public function description($description = null, $lang = null) {
-		if ($description !== null) {
-			if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->getConfig('multiLanguage')) {
-				return '';
-			}
-
-			if ($lang === null) {
-				$lang = $this->meta['language'] ?: '*';
-			}
-
-			$this->meta['description'][$lang] = $description;
-		}
+	public function getDescription(?string $lang = null): string {
 		if (!is_array($this->meta['description'])) {
 			if ($lang === null) {
 				$lang = $this->meta['language'] ?: '*';
@@ -306,10 +343,16 @@ class MetaHelper extends Helper {
 						continue;
 					}
 				}
-				$res[] = $this->description($content, $lang);
+				$array = [
+					'name' => 'description',
+					'content' => $description,
+					'lang' => $lang,
+				];
+
+				$res[] = (string)$this->Html->meta($array);
 			}
 
-			return implode('', $res);
+			return implode(PHP_EOL, $res);
 		}
 
 		$description = $this->meta['description'][$lang] ?? false;
@@ -328,33 +371,35 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * @param array<string>|string|null $keywords
+	 * @param array<string>|string $value
 	 * @param string|null $lang
-	 * @return string
+	 *
+	 * @return void
 	 */
-	public function keywords($keywords = null, $lang = null) {
-		if ($keywords !== null) {
-			if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->getConfig('multiLanguage')) {
-				return '';
-			}
-
-			if ($lang === null) {
-				$lang = $this->meta['language'] ?: '*';
-			}
-
-			$keywords = (array)$keywords;
-			$this->meta['keywords'][$lang] = $keywords;
-		}
-		if (!is_array($this->meta['keywords'])) {
-			if ($lang === null) {
-				$lang = $this->meta['language'] ?: '*';
-			}
-			$this->meta['keywords'] = [$lang => $this->meta['keywords']];
+	public function setKeywords(array|string $value, ?string $lang = null): void {
+		if ($lang && $this->meta['language'] && $lang !== $this->meta['language'] && !$this->getConfig('multiLanguage')) {
+			throw new RuntimeException('Not configured as multi-language');
 		}
 
 		if ($lang === null) {
-			/** @var array<string, mixed> $keywords */
+			$lang = $this->meta['language'] ?: '*';
+		}
+
+		$this->meta['keywords'][$lang] = $value;
+	}
+
+	/**
+	 * @param string|null $lang
+	 *
+	 * @return string
+	 */
+	public function getKeywords(?string $lang = null): string {
+		if ($lang === null) {
+			/** @var array<string, mixed>|string $keywords */
 			$keywords = $this->meta['keywords'];
+			if (!is_array($keywords)) {
+				return $this->keywords($keywords, $lang);
+			}
 
 			$res = [];
 			foreach ($keywords as $lang => $keyword) {
@@ -364,6 +409,7 @@ class MetaHelper extends Helper {
 						continue;
 					}
 				}
+
 				$res[] = $this->keywords($keyword, $lang);
 			}
 
@@ -372,6 +418,16 @@ class MetaHelper extends Helper {
 
 		$keywords = $this->meta['keywords'][$lang] ?? false;
 
+		return $this->keywords($keywords, $lang);
+	}
+
+	/**
+	 * @param mixed $keywords
+	 * @param string|null $lang
+	 *
+	 * @return string
+	 */
+	protected function keywords(mixed $keywords, ?string $lang): string {
 		if ($keywords === false) {
 			return '';
 		}
@@ -395,7 +451,7 @@ class MetaHelper extends Helper {
 	 * @throws \Exception
 	 * @return string
 	 */
-	public function custom($name = null, $value = null) {
+	public function custom($name = null, $value = null): string {
 		if ($value !== null) {
 			if ($name === null) {
 				throw new Exception('Name must be provided');
@@ -427,19 +483,23 @@ class MetaHelper extends Helper {
 	}
 
 	/**
-	 * Outputs a canonical tag to the page
-	 *
-	 * @param array|string|true|null $url Canonical URL override
+	 * @param array|string|bool $value
+	 * @return void
+	 */
+	public function setCanonical(array|string|bool $value): void {
+		$this->meta['canonical'] = $value;
+	}
+
+	/**
 	 * @param bool $full
 	 *
 	 * @return string
 	 */
-	public function canonical($url = null, $full = false) {
-		if ($url !== null) {
-			$this->meta['canonical'] = $url;
-		}
-
+	public function getCanonical(bool $full = false): string {
 		$url = $this->meta['canonical'];
+		if ($url === false) {
+			return '';
+		}
 
 		$options = [
 			'fullBase' => $full,
@@ -462,20 +522,19 @@ class MetaHelper extends Helper {
 	}
 
 	/**
+	 * @param string $type
+	 * @param string|false $value
+	 * @return void
+	 */
+	public function setHttpEquiv(string $type, string|false $value): void {
+		$this->meta['http-equiv'][$type] = $value;
+	}
+
+	/**
 	 * @param string|null $type
-	 * @param string|null $value
-	 * @throws \Exception
 	 * @return string
 	 */
-	public function httpEquiv($type = null, $value = null) {
-		if ($value !== null) {
-			if ($type === null) {
-				throw new Exception('Type must be provided');
-			}
-
-			$this->meta['http-equiv'][$type] = $value;
-		}
-
+	public function getHttpEquiv(?string $type = null): string {
 		if ($type === null) {
 			$res = [];
 			foreach ($this->meta['http-equiv'] as $type => $content) {
@@ -489,6 +548,19 @@ class MetaHelper extends Helper {
 			return '';
 		}
 		$value = $this->meta['http-equiv'][$type];
+
+		return $this->httpEquiv($type, $value);
+	}
+
+	/**
+	 * @param string $type
+	 * @param string|false $value
+	 * @return string
+	 */
+	protected function httpEquiv(string $type, string|false $value): string {
+		if ($value === false) {
+			return '';
+		}
 
 		$array = [
 			'http-equiv' => $type,
@@ -515,10 +587,10 @@ class MetaHelper extends Helper {
 	 * - implode
 	 *
 	 * @param string|null $header Specific meta header to output
-	 * @param array $options
+	 * @param array<string, mixed> $options
 	 * @return string
 	 */
-	public function out($header = null, $options = []) {
+	public function out(?string $header = null, array $options = []): string {
 		$defaults = [
 			'implode' => '',
 			'skip' => [],
@@ -535,35 +607,35 @@ class MetaHelper extends Helper {
 			}
 
 			if ($header === 'charset') {
-				return $this->charset();
+				return $this->getCharset();
 			}
 
 			if ($header === 'icon') {
-				return $this->icon();
+				return $this->getIcon();
 			}
 
 			if ($header === 'title') {
-				return $this->title();
+				return $this->getTitle();
 			}
 
 			if ($header === 'canonical') {
-				return $this->canonical();
+				return $this->getCanonical();
 			}
 
 			if ($header === 'robots') {
-				return $this->robots();
+				return $this->getRobots();
 			}
 
 			if ($header === 'language') {
-				return $this->language();
+				return $this->getLanguage();
 			}
 
 			if ($header === 'keywords') {
-				return $this->keywords();
+				return $this->getKeywords();
 			}
 
 			if ($header === 'description') {
-				return $this->description();
+				return $this->getDescription();
 			}
 
 			if ($header === 'custom') {

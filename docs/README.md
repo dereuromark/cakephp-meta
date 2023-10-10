@@ -9,6 +9,6 @@
 ## Contributing
 Your help is greatly appreciated.
 
-Make sure tests pass: `php phpunit.phar`
+Make sure tests pass: `composer test`
 
-Make sure CS pass: `vendor/bin/sniff` and `vendor/bin/sniff -f` to auto-fix
+Make sure CS pass: `composer cs-check` and `composer cs-fix` to auto-fix

@@ -45,12 +45,12 @@ $this->set(compact('_meta')));
 
 In your view ctp you can also do:
 ```php
-$this->Meta->keywords('I, am, English', 'en');
-$this->Meta->keywords('Ich, bin, deutsch', 'de');
-$this->Meta->description('Foo Bar');
-$this->Meta->robots(['index' => false]);
+$this->Meta->setKeywords('I, am, English', 'en');
+$this->Meta->setKeywords('Ich, bin, deutsch', 'de');
+$this->Meta->setDescription('Foo Bar');
+$this->Meta->setRobots(['index' => false]);
 ```
-By default this will not output anything, but collect it inside the helper.
+All this data will be collected it inside the helper across teh whole request.
 Those calls can be best made in a view or element (because those are rendered before the layout).
 If you do it inside a layout make sure this happens before you call `out()`.
 
@@ -63,11 +63,11 @@ echo $this->fetch('meta'); // This is a fallback (optional) for view blocks
 It will iterate over all defined meta tags and output them.
 Note that you can skip some of those, if you want using the `skip` option.
 
-If you don't manually outputting them, you must define all tags prior to the `out()` call.
+If you don't manually output them, you must define all tags prior to the `out()` call.
 The  `out()` call should be the last PHP code in your `<head></head>` section the layout HTML.
 
 You can also manually output each group of meta tags, e.g. all keywords and descriptions (which you defined before) in all languages using
 ```php
-echo $this->Meta->keywords();
-echo $this->Meta->description();
+echo $this->Meta->getKeywords();
+echo $this->Meta->getDescription();
 ```
