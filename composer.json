@@ -1,6 +1,7 @@
 {
 	"name": "dereuromark/cakephp-meta",
 	"description": "Meta plugin for CakePHP",
+	"license": "MIT",
 	"type": "cakephp-plugin",
 	"keywords": [
 		"cakephp",
@@ -11,14 +12,13 @@
 		"canonical"
 	],
 	"homepage": "https://github.com/dereuromark/cakephp-meta",
-	"license": "MIT",
 	"require": {
 		"php": ">=8.1",
 		"cakephp/cakephp": "^5.0.0"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "^10.2",
-		"fig-r/psr2r-sniffer": "dev-next"
+		"fig-r/psr2r-sniffer": "dev-next",
+		"phpunit/phpunit": "^10.2"
 	},
 	"autoload": {
 		"psr-4": {
@@ -27,21 +27,21 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Meta\\Test\\": "tests/",
-			"Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+			"Cake\\Test\\": "vendor/cakephp/cakephp/tests/",
+			"Meta\\Test\\": "tests/"
 		}
-	},
-	"scripts": {
-		"test": "phpunit",
-		"test-coverage": "phpunit --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml",
-		"stan": "phpstan analyse",
-		"stan-setup": "cp composer.json composer.backup && composer require --dev phpstan/phpstan:^1.0.0 && mv composer.backup composer.json",
-		"cs-check": "phpcs --extensions=php",
-		"cs-fix": "phpcbf --extensions=php"
 	},
 	"config": {
 		"allow-plugins": {
 			"dealerdirect/phpcodesniffer-composer-installer": true
 		}
+	},
+	"scripts": {
+		"cs-check": "phpcs --extensions=php",
+		"cs-fix": "phpcbf --extensions=php",
+		"stan": "phpstan analyse",
+		"stan-setup": "cp composer.json composer.backup && composer require --dev phpstan/phpstan:^1.0.0 && mv composer.backup composer.json",
+		"test": "phpunit",
+		"test-coverage": "phpunit --log-junit tmp/coverage/unitreport.xml --coverage-html tmp/coverage --coverage-clover tmp/coverage/coverage.xml"
 	}
 }
