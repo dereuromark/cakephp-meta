@@ -3,6 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/dereuromark/cakephp-meta/badge.svg)](https://coveralls.io/r/dereuromark/cakephp-meta)
 [![License](https://poser.pugx.org/dereuromark/cakephp-meta/license.svg)](LICENSE)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.1-8892BF.svg)](https://php.net/)
+[![Latest Stable Version](https://poser.pugx.org/dereuromark/cakephp-meta/v/stable.svg)](https://packagist.org/packages/dereuromark/cakephp-meta)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
 This branch is for **CakePHP 5.0+**. For details see [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
