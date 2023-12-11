@@ -1,7 +1,7 @@
 # Meta plugin for CakePHP
 [![CI](https://github.com/dereuromark/cakephp-meta/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/dereuromark/cakephp-meta/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Coverage Status](https://coveralls.io/repos/dereuromark/cakephp-meta/badge.svg)](https://coveralls.io/r/dereuromark/cakephp-meta)
-[![License](https://poser.pugx.org/dereuromark/cakephp-meta/license.svg)](https://packagist.org/packages/dereuromark/cakephp-meta)
+[![License](https://poser.pugx.org/dereuromark/cakephp-meta/license.svg)](LICENSE)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.1-8892BF.svg)](https://php.net/)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
