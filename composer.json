@@ -17,7 +17,7 @@
 		"cakephp/cakephp": "^5.0.0"
 	},
 	"require-dev": {
-		"fig-r/psr2r-sniffer": "dev-next",
+		"fig-r/psr2r-sniffer": "dev-master",
 		"phpunit/phpunit": "^10.2"
 	},
 	"autoload": {
