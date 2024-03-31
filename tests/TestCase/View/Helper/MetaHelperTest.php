@@ -1,6 +1,6 @@
 <?php
 
-namespace Meta\TestCase\View\Helper;
+namespace Meta\Test\TestCase\View\Helper;
 
 use Cake\Core\Configure;
 use Cake\Http\ServerRequest;
