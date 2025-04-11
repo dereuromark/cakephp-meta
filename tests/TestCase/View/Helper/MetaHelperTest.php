@@ -323,9 +323,10 @@ class MetaHelperTest extends TestCase {
 	public function testOut() {
 		$result = $this->Meta->out();
 
-		$expected = '<title>Controller Name - Action Name</title><meta charset="utf-8">';
-		$expected .= '<link href="/favicon.ico" type="image/x-icon" rel="icon"><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">';
-		$expected .= '<meta name="robots" content="noindex,nofollow,noarchive">';
+		$expected = '<title>Controller Name - Action Name</title>';
+		$expected .= PHP_EOL . '<meta charset="utf-8">';
+		$expected .= PHP_EOL . '<link href="/favicon.ico" type="image/x-icon" rel="icon"><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">';
+		$expected .= PHP_EOL . '<meta name="robots" content="noindex,nofollow,noarchive">';
 		$this->assertTextEquals($expected, $result);
 
 		$this->Meta->setCharset('utf-8');

@@ -71,6 +71,8 @@ class MetaHelper extends Helper {
 		if (!empty($options['robots']) && is_array($options['robots'])) {
 			$options['robots'] = Hash::merge($this->meta['robots'], $options['robots']);
 		}
+
+		unset($options['className']);
 		$this->meta = $options + $this->meta;
 
 		$viewVarsMeta = (array)$this->getView()->get('_meta');
@@ -592,7 +594,7 @@ class MetaHelper extends Helper {
 	 */
 	public function out(?string $header = null, array $options = []): string {
 		$defaults = [
-			'implode' => '',
+			'implode' => Configure::read('debug') ? PHP_EOL : '',
 			'skip' => [],
 		];
 		$options += $defaults;
