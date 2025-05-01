@@ -6,7 +6,7 @@
 [![Latest Stable Version](https://poser.pugx.org/dereuromark/cakephp-meta/v/stable.svg)](https://packagist.org/packages/dereuromark/cakephp-meta)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
-This branch is for **CakePHP 5.0+**. For details see [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
+This branch is for **CakePHP 5.1+**. For details see [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
 
 ## What is this plugin for?
 This plugin helps to maintain and output meta tags for your HTML pages, including SEO relevant parts like

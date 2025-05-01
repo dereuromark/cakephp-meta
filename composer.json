@@ -14,7 +14,7 @@
 	"homepage": "https://github.com/dereuromark/cakephp-meta",
 	"require": {
 		"php": ">=8.1",
-		"cakephp/cakephp": "^5.0.0"
+		"cakephp/cakephp": "^5.1.1"
 	},
 	"require-dev": {
 		"fig-r/psr2r-sniffer": "dev-master",
