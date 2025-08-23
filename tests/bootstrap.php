@@ -28,7 +28,7 @@ define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 define('CAKE', CORE_PATH . APP_DIR . DS);
 
 define('WWW_ROOT', ROOT . DS . 'webroot' . DS);
-define('CONFIG', dirname(__FILE__) . DS . 'config' . DS);
+define('CONFIG', __DIR__ . DS . 'config' . DS);
 
 ini_set('intl.default_locale', 'de-DE');
 
@@ -37,16 +37,20 @@ require CORE_PATH . 'config/bootstrap.php';
 require CAKE . 'functions.php';
 
 Configure::write('App', [
-		'namespace' => 'App',
-		'encoding' => 'UTF-8']);
+	'namespace' => 'App',
+	'encoding' => 'UTF-8',
+
+]);
 Configure::write('debug', true);
 
 Configure::write('Config', [
-		'adminEmail' => 'test@example.com',
-		'adminName' => 'Mark']);
+	'adminEmail' => 'test@example.com',
+	'adminName' => 'Mark',
+
+]);
 Mailer::setConfig('default', ['transport' => 'Debug']);
 TransportFactory::setConfig('Debug', [
-		'className' => 'Debug',
+	'className' => 'Debug',
 ]);
 
 mb_internal_encoding('UTF-8');
