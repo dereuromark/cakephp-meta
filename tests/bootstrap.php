@@ -39,14 +39,12 @@ require CAKE . 'functions.php';
 Configure::write('App', [
 	'namespace' => 'App',
 	'encoding' => 'UTF-8',
-
 ]);
 Configure::write('debug', true);
 
 Configure::write('Config', [
 	'adminEmail' => 'test@example.com',
 	'adminName' => 'Mark',
-
 ]);
 Mailer::setConfig('default', ['transport' => 'Debug']);
 TransportFactory::setConfig('Debug', [
