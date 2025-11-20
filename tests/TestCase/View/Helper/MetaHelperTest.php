@@ -155,7 +155,7 @@ class MetaHelperTest extends TestCase {
 		$this->Meta->setDescription('foo', 'deu');
 
 		$result = $this->Meta->getDescription();
-		$expected = '<meta name="description" content="descr foo" lang="deu">';
+		$expected = '<meta name="description" content="foo" lang="deu">';
 		$this->assertEquals($expected, $result);
 	}
 
@@ -351,8 +351,8 @@ class MetaHelperTest extends TestCase {
 <meta name="robots" content="index,nofollow,noarchive">
 <meta name="description" content="A sentence" lang="de">
 <meta name="keywords" content="foo bar" lang="de"><meta name="keywords" content="foo bar EN" lang="en">
-<meta name="http-equiv" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="x" content="y">';
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="x" content="y">
+<meta name="http-equiv" content="0">';
 		$this->assertTextEquals($expected, $result);
 	}
 

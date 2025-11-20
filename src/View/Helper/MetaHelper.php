@@ -7,7 +7,7 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\View\Helper;
 use Cake\View\View;
-use Exception;
+use InvalidArgumentException;
 use RuntimeException;
 
 /**
@@ -44,7 +44,9 @@ class MetaHelper extends Helper {
 		'canonical' => null, // Set to true for auto-detect
 		'language' => null, // Set to true for auto-detect
 		'robots' => ['index' => false, 'follow' => false, 'archive' => false],
-		'description' => null,
+		'description' => [],
+		'keywords' => [],
+		'custom' => [],
 	];
 
 	/**
@@ -210,6 +212,9 @@ class MetaHelper extends Helper {
 	 * @return string
 	 */
 	public function getSizesIcon(string $url): string {
+		if (!isset($this->meta['sizesIcon'][$url])) {
+			return '';
+		}
 		/** @var array<string, mixed> $value */
 		$value = $this->meta['sizesIcon'][$url];
 
@@ -347,7 +352,7 @@ class MetaHelper extends Helper {
 				}
 				$array = [
 					'name' => 'description',
-					'content' => $description,
+					'content' => $content,
 					'lang' => $lang,
 				];
 
@@ -450,13 +455,13 @@ class MetaHelper extends Helper {
 	/**
 	 * @param string|null $name
 	 * @param string|null $value
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 * @return string
 	 */
 	public function custom($name = null, $value = null): string {
 		if ($value !== null) {
 			if ($name === null) {
-				throw new Exception('Name must be provided');
+				throw new InvalidArgumentException('Name must be provided');
 			}
 
 			$this->meta['custom'][$name] = $value;
@@ -464,7 +469,8 @@ class MetaHelper extends Helper {
 
 		if ($name === null) {
 			$res = [];
-			foreach ($this->meta['custom'] as $name => $content) {
+			$custom = $this->meta['custom'] ?? [];
+			foreach ($custom as $name => $content) {
 				$res[] = $this->custom($name, $content);
 			}
 
@@ -511,7 +517,7 @@ class MetaHelper extends Helper {
 			$url = $this->getView()->getRequest()->getAttribute('here');
 		} elseif (is_array($url)) {
 			$url = $this->Url->build($url, $options);
-		} elseif (!preg_match('/^(https:\/\/|http:\/\/)/', $url)) {
+		} elseif (!preg_match('/^([a-z][a-z0-9+\-.]*:)?\/\//', $url)) {
 			$url = $this->Url->build($url, $options);
 		}
 
@@ -539,7 +545,8 @@ class MetaHelper extends Helper {
 	public function getHttpEquiv(?string $type = null): string {
 		if ($type === null) {
 			$res = [];
-			foreach ($this->meta['http-equiv'] as $type => $content) {
+			$httpEquiv = $this->meta['http-equiv'] ?? [];
+			foreach ($httpEquiv as $type => $content) {
 				$res[] = $this->httpEquiv($type, $content);
 			}
 
