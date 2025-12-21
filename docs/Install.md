@@ -4,15 +4,11 @@ You can install this plugin into your CakePHP application using [composer](https
 The recommended way to install composer packages is:
 
 ```
-composer require dereuromark/cakephp-meta:dev-master
+composer require dereuromark/cakephp-meta
 ```
 Details @ https://packagist.org/packages/dereuromark/cakephp-meta
 
-This will load the plugin (within your boostrap file):
-```php
-Plugin::load('Meta');
+Then load the plugin:
 ```
-or
-```php
-Plugin::loadAll(...);
+bin/cake plugin load Meta
 ```
