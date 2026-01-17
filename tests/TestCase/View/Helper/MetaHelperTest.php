@@ -323,11 +323,10 @@ class MetaHelperTest extends TestCase {
 	public function testOut() {
 		$result = $this->Meta->out();
 
-		$expected = '<title>Controller Name - Action Name</title>';
-		$expected .= PHP_EOL . '<meta charset="utf-8">';
-		$expected .= PHP_EOL . '<link href="/favicon.ico" type="image/x-icon" rel="icon">';
-		$expected .= PHP_EOL . '<meta name="robots" content="noindex,nofollow,noarchive">';
-		$this->assertTextEquals($expected, $result);
+		// Icon output varies by CakePHP version (newer versions dropped shortcut icon)
+		$iconPattern = '<link href="/favicon.ico" type="image/x-icon" rel="icon">(<link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">)?';
+		$pattern = '#^<title>Controller Name - Action Name</title>\n<meta charset="utf-8">\n' . $iconPattern . '\n<meta name="robots" content="noindex,nofollow,noarchive">$#';
+		$this->assertMatchesRegularExpression($pattern, $result);
 
 		$this->Meta->setCharset('utf-8');
 		$this->Meta->setTitle('Foo');
@@ -343,17 +342,18 @@ class MetaHelperTest extends TestCase {
 
 		$result = $this->Meta->out(null, ['implode' => PHP_EOL]);
 
-		$expected = '<title>Foo</title>
+		// Icon output varies by CakePHP version (newer versions dropped shortcut icon)
+		$pattern = '#^<title>Foo</title>
 <meta charset="utf-8">
-<link href="/favicon.ico" type="image/x-icon" rel="icon">
+<link href="/favicon.ico" type="image/x-icon" rel="icon">(<link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">)?
 <link rel="canonical" href="/">
 <meta http-equiv="language" content="de">
 <meta name="robots" content="index,nofollow,noarchive">
 <meta name="description" content="A sentence" lang="de">
 <meta name="keywords" content="foo bar" lang="de"><meta name="keywords" content="foo bar EN" lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="x" content="y">
-<meta name="http-equiv" content="0">';
-		$this->assertTextEquals($expected, $result);
+<meta name="http-equiv" content="0">$#';
+		$this->assertMatchesRegularExpression($pattern, $result);
 	}
 
 	/**
