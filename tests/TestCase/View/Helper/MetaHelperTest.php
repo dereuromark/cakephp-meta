@@ -325,7 +325,7 @@ class MetaHelperTest extends TestCase {
 
 		$expected = '<title>Controller Name - Action Name</title>';
 		$expected .= PHP_EOL . '<meta charset="utf-8">';
-		$expected .= PHP_EOL . '<link href="/favicon.ico" type="image/x-icon" rel="icon"><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">';
+		$expected .= PHP_EOL . '<link href="/favicon.ico" type="image/x-icon" rel="icon">';
 		$expected .= PHP_EOL . '<meta name="robots" content="noindex,nofollow,noarchive">';
 		$this->assertTextEquals($expected, $result);
 
@@ -345,7 +345,7 @@ class MetaHelperTest extends TestCase {
 
 		$expected = '<title>Foo</title>
 <meta charset="utf-8">
-<link href="/favicon.ico" type="image/x-icon" rel="icon"><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon">
+<link href="/favicon.ico" type="image/x-icon" rel="icon">
 <link rel="canonical" href="/">
 <meta http-equiv="language" content="de">
 <meta name="robots" content="index,nofollow,noarchive">
