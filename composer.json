@@ -1,6 +1,6 @@
 {
 	"name": "dereuromark/cakephp-meta",
-	"description": "Meta plugin for CakePHP",
+	"description": "A CakePHP plugin for SEO meta tags, OpenGraph and Twitter Cards",
 	"license": "MIT",
 	"type": "cakephp-plugin",
 	"keywords": [
@@ -9,9 +9,21 @@
 		"view",
 		"SEO",
 		"meta",
-		"canonical"
+		"canonical",
+		"opengraph",
+		"twitter-cards"
+	],
+	"authors": [
+		{
+			"name": "Mark Scherer",
+			"homepage": "https://www.dereuromark.de",
+			"role": "Maintainer"
+		}
 	],
 	"homepage": "https://github.com/dereuromark/cakephp-meta",
+	"support": {
+		"source": "https://github.com/dereuromark/cakephp-meta"
+	},
 	"require": {
 		"php": ">=8.2",
 		"cakephp/cakephp": "^5.1.1"
