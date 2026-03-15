@@ -5,3 +5,4 @@ vendor/
 tmp/
 .idea/
 composer.phar
+.phpcs.cache
