@@ -292,11 +292,11 @@ class MetaHelperTest extends TestCase {
 	public function testMetaCanonical() {
 		$this->Meta->setCanonical('/some/url/param1');
 		$is = $this->Meta->getCanonical();
-		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build('/some/url/param1', ['fullBase' => true]) . '">', $is);
+		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build('/some/url/param1') . '">', $is);
 
-		$this->Meta->setCanonical(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], true);
+		$this->Meta->setCanonical(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar']);
 		$is = $this->Meta->getCanonical();
-		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], ['fullBase' => true]) . '">', $is);
+		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar']) . '">', $is);
 	}
 
 	/**
