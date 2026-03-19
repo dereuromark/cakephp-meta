@@ -442,6 +442,63 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testSetArticle(): void {
+		$this->Meta->setArticle([
+			'headline' => 'How to Use JSON-LD',
+			'author' => 'John Doe',
+			'datePublished' => '2026-03-19',
+			'dateModified' => '2026-03-19',
+			'image' => 'https://example.com/image.jpg',
+			'description' => 'A guide to structured data',
+		]);
+
+		$result = $this->Meta->getArticle();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('"@type":', $result);
+		$this->assertStringContainsString('Article', $result);
+		$this->assertStringContainsString('"headline":', $result);
+		$this->assertStringContainsString('How to Use JSON-LD', $result);
+		$this->assertStringContainsString('Person', $result);
+		$this->assertStringContainsString('John Doe', $result);
+		$this->assertStringContainsString('"datePublished":', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetArticleMinimal(): void {
+		$this->Meta->setArticle([
+			'headline' => 'Simple Post',
+		]);
+
+		$result = $this->Meta->getArticle();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('Simple Post', $result);
+		$this->assertStringNotContainsString('author', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetArticleMissingHeadline(): void {
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessage("Article requires a 'headline' string.");
+		$this->Meta->setArticle([
+			'author' => 'John Doe',
+		]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testGetArticleNull(): void {
+		$result = $this->Meta->getArticle();
+		$this->assertNull($result);
+	}
+
+	/**
 	 * TearDown method
 	 *
 	 * @return void
