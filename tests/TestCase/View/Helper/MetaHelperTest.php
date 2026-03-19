@@ -9,6 +9,7 @@ use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
+use InvalidArgumentException;
 use Meta\View\Helper\MetaHelper;
 use RuntimeException;
 
@@ -41,7 +42,8 @@ class MetaHelperTest extends TestCase {
 
 		$request = (new ServerRequest())
 			->withParam('controller', 'ControllerName')
-			->withParam('action', 'actionName');
+			->withParam('action', 'actionName')
+			->withEnv('HTTP_HOST', 'localhost');
 
 		$this->View = new View($request);
 		$this->Meta = new MetaHelper($this->View);
@@ -49,6 +51,7 @@ class MetaHelperTest extends TestCase {
 		$builder = Router::createRouteBuilder('/');
 		$builder->setRouteClass(DashedRoute::class);
 		$builder->connect('/:controller/:action/*');
+		$builder->fallbacks(DashedRoute::class);
 		$builder->plugin('Meta', function (RouteBuilder $routes): void {
 			$routes->fallbacks(DashedRoute::class);
 		});
@@ -290,11 +293,11 @@ class MetaHelperTest extends TestCase {
 	public function testMetaCanonical() {
 		$this->Meta->setCanonical('/some/url/param1');
 		$is = $this->Meta->getCanonical();
-		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build('/some/url/param1', ['fullBase' => true]) . '">', $is);
+		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build('/some/url/param1') . '">', $is);
 
-		$this->Meta->setCanonical(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], true);
+		$this->Meta->setCanonical(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar']);
 		$is = $this->Meta->getCanonical();
-		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar'], ['fullBase' => true]) . '">', $is);
+		$this->assertEquals('<link rel="canonical" href="' . $this->Meta->Url->build(['plugin' => 'Meta', 'controller' => 'Foo', 'action' => 'bar']) . '">', $is);
 	}
 
 	/**
@@ -371,6 +374,259 @@ class MetaHelperTest extends TestCase {
 
 		$this->Meta->setDescription('A sentence', 'de');
 		$this->Meta->setDescription('A sentence EN', 'en');
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetBreadcrumbs(): void {
+		$this->Meta->setBreadcrumbs([
+			['name' => 'Home', 'url' => '/'],
+			['name' => 'Blog', 'url' => '/blog'],
+			['name' => 'My Post'],
+		]);
+
+		$result = $this->Meta->getBreadcrumbs();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('"@context":', $result);
+		$this->assertStringContainsString('https://schema.org', $result);
+		$this->assertStringContainsString('"@type":', $result);
+		$this->assertStringContainsString('BreadcrumbList', $result);
+		$this->assertStringContainsString('"name":', $result);
+		$this->assertStringContainsString('Home', $result);
+		$this->assertStringContainsString('"position":', $result);
+		$this->assertStringContainsString('<script type="application/ld+json">', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetBreadcrumbsEmpty(): void {
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage('Breadcrumbs require at least one item.');
+		$this->Meta->setBreadcrumbs([]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetBreadcrumbsMissingName(): void {
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage("Breadcrumb item 1 requires a 'name' string.");
+		$this->Meta->setBreadcrumbs([
+			['name' => 'Home', 'url' => '/'],
+			['url' => '/blog'],
+		]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetBreadcrumbsUrlArray(): void {
+		$this->Meta->setBreadcrumbs([
+			['name' => 'Home', 'url' => ['controller' => 'Pages', 'action' => 'home']],
+			['name' => 'Current'],
+		]);
+
+		$result = $this->Meta->getBreadcrumbs();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('"item":', $result);
+		$this->assertStringContainsString('http', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testGetBreadcrumbsNull(): void {
+		$result = $this->Meta->getBreadcrumbs();
+		$this->assertNull($result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetArticle(): void {
+		$this->Meta->setArticle([
+			'headline' => 'How to Use JSON-LD',
+			'author' => 'John Doe',
+			'datePublished' => '2026-03-19',
+			'dateModified' => '2026-03-19',
+			'image' => 'https://example.com/image.jpg',
+			'description' => 'A guide to structured data',
+		]);
+
+		$result = $this->Meta->getArticle();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('"@type":', $result);
+		$this->assertStringContainsString('Article', $result);
+		$this->assertStringContainsString('"headline":', $result);
+		$this->assertStringContainsString('How to Use JSON-LD', $result);
+		$this->assertStringContainsString('Person', $result);
+		$this->assertStringContainsString('John Doe', $result);
+		$this->assertStringContainsString('"datePublished":', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetArticleMinimal(): void {
+		$this->Meta->setArticle([
+			'headline' => 'Simple Post',
+		]);
+
+		$result = $this->Meta->getArticle();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('Simple Post', $result);
+		$this->assertStringNotContainsString('author', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetArticleMissingHeadline(): void {
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage("Article requires a 'headline' string.");
+		$this->Meta->setArticle([
+			'author' => 'John Doe',
+		]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testGetArticleNull(): void {
+		$result = $this->Meta->getArticle();
+		$this->assertNull($result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetOrganization(): void {
+		$this->Meta->setOrganization([
+			'name' => 'Acme Inc',
+			'url' => 'https://acme.com',
+			'logo' => 'https://acme.com/logo.png',
+			'sameAs' => [
+				'https://twitter.com/acme',
+				'https://facebook.com/acme',
+			],
+		]);
+
+		$result = $this->Meta->getOrganization();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('"@type":', $result);
+		$this->assertStringContainsString('Organization', $result);
+		$this->assertStringContainsString('"name":', $result);
+		$this->assertStringContainsString('Acme Inc', $result);
+		$this->assertStringContainsString('https://acme.com', $result);
+		$this->assertStringContainsString('"sameAs":', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetOrganizationMissingName(): void {
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage("Organization requires a 'name' string.");
+		$this->Meta->setOrganization([
+			'url' => 'https://acme.com',
+		]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetOrganizationFromConfig(): void {
+		Configure::write('Meta.organization', [
+			'name' => 'Global Corp',
+			'url' => 'https://global.com',
+		]);
+		$this->Meta = new MetaHelper($this->View);
+
+		$this->Meta->setOrganization([]);
+
+		$result = $this->Meta->getOrganization();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('Global Corp', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetOrganizationConfigMerge(): void {
+		Configure::write('Meta.organization', [
+			'name' => 'Global Corp',
+			'url' => 'https://global.com',
+			'logo' => 'https://global.com/logo.png',
+		]);
+		$this->Meta = new MetaHelper($this->View);
+
+		$this->Meta->setOrganization([
+			'name' => 'Local Division',
+		]);
+
+		$result = $this->Meta->getOrganization();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('Local Division', $result);
+		$this->assertStringContainsString('https://global.com', $result);
+		$this->assertStringContainsString('logo.png', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testGetOrganizationNull(): void {
+		$result = $this->Meta->getOrganization();
+		$this->assertNull($result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testOutIncludesJsonLd(): void {
+		$this->Meta->setBreadcrumbs([
+			['name' => 'Home', 'url' => '/'],
+		]);
+		$this->Meta->setArticle([
+			'headline' => 'Test Article',
+		]);
+		$this->Meta->setOrganization([
+			'name' => 'Test Org',
+		]);
+
+		$result = $this->Meta->out();
+		$this->assertStringContainsString('<script type="application/ld+json">', $result);
+		$this->assertStringContainsString('BreadcrumbList', $result);
+		$this->assertStringContainsString('Article', $result);
+		$this->assertStringContainsString('Organization', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testOutWithoutJsonLd(): void {
+		$result = $this->Meta->out();
+		$this->assertStringNotContainsString('application/ld+json', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testJsonLdDebugPrettyPrint(): void {
+		$this->Meta->setOrganization([
+			'name' => 'Test',
+		]);
+
+		// Debug off - compact
+		Configure::write('debug', false);
+		$result = $this->Meta->getOrganization();
+		$this->assertStringNotContainsString("\n", $result);
+
+		// Debug on - pretty
+		Configure::write('debug', true);
+		$result = $this->Meta->getOrganization();
+		$this->assertStringContainsString("\n", $result);
 	}
 
 	/**

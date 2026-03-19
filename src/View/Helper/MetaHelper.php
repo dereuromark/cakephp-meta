@@ -50,6 +50,17 @@ class MetaHelper extends Helper {
 	];
 
 	/**
+	 * JSON-LD structured data storage.
+	 *
+	 * @var array<string, array<string, mixed>|null>
+	 */
+	protected array $_jsonLd = [
+		'breadcrumbs' => null,
+		'article' => null,
+		'organization' => null,
+	];
+
+	/**
 	 * Class Constructor
 	 *
 	 * Merges defaults with
@@ -539,6 +550,173 @@ class MetaHelper extends Helper {
 	}
 
 	/**
+	 * Set breadcrumbs JSON-LD structured data.
+	 *
+	 * @param array<int, array<string, string|array>> $items Breadcrumb items with 'name' key required.
+	 * @throws \InvalidArgumentException If items are empty or missing required fields.
+	 * @return void
+	 */
+	public function setBreadcrumbs(array $items): void {
+		if ($items === []) {
+			throw new InvalidArgumentException('Breadcrumbs require at least one item.');
+		}
+
+		$listItems = [];
+		foreach ($items as $i => $item) {
+			if (!isset($item['name']) || !is_string($item['name'])) {
+				throw new InvalidArgumentException("Breadcrumb item {$i} requires a 'name' string.");
+			}
+
+			$listItem = [
+				'@type' => 'ListItem',
+				'position' => $i + 1,
+				'name' => $item['name'],
+			];
+
+			if (isset($item['url'])) {
+				$url = is_array($item['url'])
+					? $this->Url->build($item['url'], ['fullBase' => true])
+					: $item['url'];
+				$listItem['item'] = $url;
+			}
+
+			$listItems[] = $listItem;
+		}
+
+		$this->_jsonLd['breadcrumbs'] = [
+			'@type' => 'BreadcrumbList',
+			'itemListElement' => $listItems,
+		];
+	}
+
+	/**
+	 * Get breadcrumbs JSON-LD output.
+	 *
+	 * @return string|null
+	 */
+	public function getBreadcrumbs(): ?string {
+		if ($this->_jsonLd['breadcrumbs'] === null) {
+			return null;
+		}
+
+		return $this->renderJsonLd($this->_jsonLd['breadcrumbs']);
+	}
+
+	/**
+	 * Set article JSON-LD structured data.
+	 *
+	 * @param array<string, mixed> $data Article data with required 'headline' key.
+	 * @throws \InvalidArgumentException If headline is missing.
+	 * @return void
+	 */
+	public function setArticle(array $data): void {
+		if (!isset($data['headline']) || !is_string($data['headline'])) {
+			throw new InvalidArgumentException("Article requires a 'headline' string.");
+		}
+
+		$article = [
+			'@type' => 'Article',
+			'headline' => $data['headline'],
+		];
+
+		if (isset($data['author'])) {
+			if (is_string($data['author'])) {
+				$article['author'] = [
+					'@type' => 'Person',
+					'name' => $data['author'],
+				];
+			} else {
+				$article['author'] = $data['author'];
+			}
+		}
+
+		if (isset($data['datePublished'])) {
+			$article['datePublished'] = $data['datePublished'];
+		}
+
+		if (isset($data['dateModified'])) {
+			$article['dateModified'] = $data['dateModified'];
+		}
+
+		if (isset($data['image'])) {
+			$article['image'] = $data['image'];
+		}
+
+		if (isset($data['description'])) {
+			$article['description'] = $data['description'];
+		}
+
+		$this->_jsonLd['article'] = $article;
+	}
+
+	/**
+	 * Get article JSON-LD output.
+	 *
+	 * @return string|null
+	 */
+	public function getArticle(): ?string {
+		if ($this->_jsonLd['article'] === null) {
+			return null;
+		}
+
+		return $this->renderJsonLd($this->_jsonLd['article']);
+	}
+
+	/**
+	 * Set organization JSON-LD structured data.
+	 *
+	 * Merges with global config from Configure::read('Meta.organization').
+	 *
+	 * @param array<string, mixed> $data Organization data.
+	 * @throws \InvalidArgumentException If name is missing after merge.
+	 * @return void
+	 */
+	public function setOrganization(array $data): void {
+		$globalConfig = (array)Configure::read('Meta.organization');
+		$data = array_merge($globalConfig, $data);
+
+		if (!isset($data['name']) || !is_string($data['name'])) {
+			throw new InvalidArgumentException("Organization requires a 'name' string.");
+		}
+
+		$organization = [
+			'@type' => 'Organization',
+			'name' => $data['name'],
+		];
+
+		if (isset($data['url'])) {
+			$organization['url'] = $data['url'];
+		}
+
+		if (isset($data['logo'])) {
+			$organization['logo'] = $data['logo'];
+		}
+
+		if (isset($data['contactPoint'])) {
+			$organization['contactPoint'] = $data['contactPoint'];
+		}
+
+		if (isset($data['sameAs'])) {
+			$organization['sameAs'] = $data['sameAs'];
+		}
+
+		$this->_jsonLd['organization'] = $organization;
+	}
+
+	/**
+	 * Get organization JSON-LD output.
+	 *
+	 * @return string|null
+	 */
+	public function getOrganization(): ?string {
+		if ($this->_jsonLd['organization'] === null) {
+			return null;
+		}
+
+		return $this->renderJsonLd($this->_jsonLd['organization']);
+	}
+
+	/**
 	 * @param string|null $type
 	 * @return string
 	 */
@@ -577,6 +755,23 @@ class MetaHelper extends Helper {
 		];
 
 		return (string)$this->Html->meta($array);
+	}
+
+	/**
+	 * Render JSON-LD script tag.
+	 *
+	 * @param array<string, mixed> $data Schema data without @context.
+	 * @return string
+	 */
+	protected function renderJsonLd(array $data): string {
+		$data = ['@context' => 'https://schema.org'] + $data;
+
+		$flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+		if (Configure::read('debug')) {
+			$flags |= JSON_PRETTY_PRINT;
+		}
+
+		return '<script type="application/ld+json">' . json_encode($data, $flags) . '</script>';
 	}
 
 	/**
@@ -672,6 +867,21 @@ class MetaHelper extends Helper {
 				continue;
 			}
 			$results[] = $out;
+		}
+
+		// Append JSON-LD structured data
+		$jsonLdOutput = [];
+		if ($this->_jsonLd['breadcrumbs'] !== null) {
+			$jsonLdOutput[] = $this->getBreadcrumbs();
+		}
+		if ($this->_jsonLd['article'] !== null) {
+			$jsonLdOutput[] = $this->getArticle();
+		}
+		if ($this->_jsonLd['organization'] !== null) {
+			$jsonLdOutput[] = $this->getOrganization();
+		}
+		if ($jsonLdOutput !== []) {
+			$results[] = implode($options['implode'], $jsonLdOutput);
 		}
 
 		return implode($options['implode'], $results);

@@ -71,3 +71,91 @@ You can also manually output each group of meta tags, e.g. all keywords and desc
 echo $this->Meta->getKeywords();
 echo $this->Meta->getDescription();
 ```
+
+## JSON-LD Structured Data
+
+The helper supports generating JSON-LD structured data for improved SEO.
+
+### Breadcrumbs
+
+```php
+$this->Meta->setBreadcrumbs([
+    ['name' => 'Home', 'url' => '/'],
+    ['name' => 'Blog', 'url' => '/blog'],
+    ['name' => 'My Post'],  // Last item typically has no URL
+]);
+```
+
+URLs can be strings or CakePHP URL arrays:
+
+```php
+$this->Meta->setBreadcrumbs([
+    ['name' => 'Home', 'url' => ['controller' => 'Pages', 'action' => 'home']],
+    ['name' => 'Products', 'url' => ['controller' => 'Products', 'action' => 'index']],
+    ['name' => 'Widget'],
+]);
+```
+
+### Article
+
+```php
+$this->Meta->setArticle([
+    'headline' => 'How to Use JSON-LD',        // Required
+    'author' => 'John Doe',                     // Optional
+    'datePublished' => '2026-03-19',           // Optional
+    'dateModified' => '2026-03-19',            // Optional
+    'image' => 'https://example.com/image.jpg', // Optional
+    'description' => 'A guide to structured data', // Optional
+]);
+```
+
+### Organization
+
+```php
+$this->Meta->setOrganization([
+    'name' => 'Acme Inc',                       // Required
+    'url' => 'https://acme.com',               // Optional
+    'logo' => 'https://acme.com/logo.png',     // Optional
+    'sameAs' => [                              // Optional
+        'https://twitter.com/acme',
+        'https://facebook.com/acme',
+    ],
+]);
+```
+
+Organization data can be configured globally in `config/app.php`:
+
+```php
+'Meta' => [
+    'organization' => [
+        'name' => 'Acme Inc',
+        'url' => 'https://acme.com',
+        'logo' => 'https://acme.com/logo.png',
+    ],
+],
+```
+
+Then override per-page as needed:
+
+```php
+$this->Meta->setOrganization(['name' => 'Acme Blog Division']);
+// Inherits url and logo from global config
+```
+
+### Output
+
+JSON-LD is automatically included when calling `out()`:
+
+```php
+echo $this->Meta->out();
+```
+
+Or retrieve individually:
+
+```php
+echo $this->Meta->getBreadcrumbs();
+echo $this->Meta->getArticle();
+echo $this->Meta->getOrganization();
+```
+
+In debug mode, JSON-LD is pretty-printed for readability.
