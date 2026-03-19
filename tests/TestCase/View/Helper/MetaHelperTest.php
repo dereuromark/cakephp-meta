@@ -9,6 +9,7 @@ use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
+use InvalidArgumentException;
 use Meta\View\Helper\MetaHelper;
 use RuntimeException;
 
@@ -401,7 +402,7 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testSetBreadcrumbsEmpty(): void {
-		$this->expectException(\InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage('Breadcrumbs require at least one item.');
 		$this->Meta->setBreadcrumbs([]);
 	}
@@ -410,7 +411,7 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testSetBreadcrumbsMissingName(): void {
-		$this->expectException(\InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage("Breadcrumb item 1 requires a 'name' string.");
 		$this->Meta->setBreadcrumbs([
 			['name' => 'Home', 'url' => '/'],
@@ -483,7 +484,7 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testSetArticleMissingHeadline(): void {
-		$this->expectException(\InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage("Article requires a 'headline' string.");
 		$this->Meta->setArticle([
 			'author' => 'John Doe',
@@ -526,7 +527,7 @@ class MetaHelperTest extends TestCase {
 	 * @return void
 	 */
 	public function testSetOrganizationMissingName(): void {
-		$this->expectException(\InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage("Organization requires a 'name' string.");
 		$this->Meta->setOrganization([
 			'url' => 'https://acme.com',
