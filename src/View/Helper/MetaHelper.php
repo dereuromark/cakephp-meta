@@ -663,6 +663,60 @@ class MetaHelper extends Helper {
 	}
 
 	/**
+	 * Set organization JSON-LD structured data.
+	 *
+	 * Merges with global config from Configure::read('Meta.organization').
+	 *
+	 * @param array<string, mixed> $data Organization data.
+	 * @throws \InvalidArgumentException If name is missing after merge.
+	 * @return void
+	 */
+	public function setOrganization(array $data): void {
+		$globalConfig = (array)Configure::read('Meta.organization');
+		$data = array_merge($globalConfig, $data);
+
+		if (!isset($data['name']) || !is_string($data['name'])) {
+			throw new InvalidArgumentException("Organization requires a 'name' string.");
+		}
+
+		$organization = [
+			'@type' => 'Organization',
+			'name' => $data['name'],
+		];
+
+		if (isset($data['url'])) {
+			$organization['url'] = $data['url'];
+		}
+
+		if (isset($data['logo'])) {
+			$organization['logo'] = $data['logo'];
+		}
+
+		if (isset($data['contactPoint'])) {
+			$organization['contactPoint'] = $data['contactPoint'];
+		}
+
+		if (isset($data['sameAs'])) {
+			$organization['sameAs'] = $data['sameAs'];
+		}
+
+		$this->_jsonLd['organization'] = $organization;
+	}
+
+	/**
+	 * Get organization JSON-LD output.
+	 *
+	 * @return string|null
+	 */
+	public function getOrganization(): ?string {
+		if ($this->_jsonLd['organization'] === null) {
+			return null;
+		}
+
+		return $this->renderJsonLd($this->_jsonLd['organization']);
+	}
+
+	/**
 	 * @param string|null $type
 	 * @return string
 	 */
