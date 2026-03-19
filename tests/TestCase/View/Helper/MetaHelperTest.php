@@ -610,6 +610,25 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testJsonLdDebugPrettyPrint(): void {
+		$this->Meta->setOrganization([
+			'name' => 'Test',
+		]);
+
+		// Debug off - compact
+		Configure::write('debug', false);
+		$result = $this->Meta->getOrganization();
+		$this->assertStringNotContainsString("\n", $result);
+
+		// Debug on - pretty
+		Configure::write('debug', true);
+		$result = $this->Meta->getOrganization();
+		$this->assertStringContainsString("\n", $result);
+	}
+
+	/**
 	 * TearDown method
 	 *
 	 * @return void
