@@ -550,6 +550,59 @@ class MetaHelper extends Helper {
 	}
 
 	/**
+	 * Set breadcrumbs JSON-LD structured data.
+	 *
+	 * @param array<int, array<string, string|array>> $items Breadcrumb items with 'name' key required.
+	 * @throws \InvalidArgumentException If items are empty or missing required fields.
+	 * @return void
+	 */
+	public function setBreadcrumbs(array $items): void {
+		if ($items === []) {
+			throw new InvalidArgumentException('Breadcrumbs require at least one item.');
+		}
+
+		$listItems = [];
+		foreach ($items as $i => $item) {
+			if (!isset($item['name']) || !is_string($item['name'])) {
+				throw new InvalidArgumentException("Breadcrumb item {$i} requires a 'name' string.");
+			}
+
+			$listItem = [
+				'@type' => 'ListItem',
+				'position' => $i + 1,
+				'name' => $item['name'],
+			];
+
+			if (isset($item['url'])) {
+				$url = is_array($item['url'])
+					? $this->Url->build($item['url'], ['fullBase' => true])
+					: $item['url'];
+				$listItem['item'] = $url;
+			}
+
+			$listItems[] = $listItem;
+		}
+
+		$this->_jsonLd['breadcrumbs'] = [
+			'@type' => 'BreadcrumbList',
+			'itemListElement' => $listItems,
+		];
+	}
+
+	/**
+	 * Get breadcrumbs JSON-LD output.
+	 *
+	 * @return string|null
+	 */
+	public function getBreadcrumbs(): ?string {
+		if ($this->_jsonLd['breadcrumbs'] === null) {
+			return null;
+		}
+
+		return $this->renderJsonLd($this->_jsonLd['breadcrumbs']);
+	}
+
+	/**
 	 * @param string|null $type
 	 * @return string
 	 */
@@ -600,9 +653,6 @@ class MetaHelper extends Helper {
 		$data = ['@context' => 'https://schema.org'] + $data;
 
 		$flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
-		if (Configure::read('debug')) {
-			$flags |= JSON_PRETTY_PRINT;
-		}
 
 		return '<script type="application/ld+json">' . json_encode($data, $flags) . '</script>';
 	}

@@ -41,7 +41,8 @@ class MetaHelperTest extends TestCase {
 
 		$request = (new ServerRequest())
 			->withParam('controller', 'ControllerName')
-			->withParam('action', 'actionName');
+			->withParam('action', 'actionName')
+			->withEnv('HTTP_HOST', 'localhost');
 
 		$this->View = new View($request);
 		$this->Meta = new MetaHelper($this->View);
@@ -49,6 +50,7 @@ class MetaHelperTest extends TestCase {
 		$builder = Router::createRouteBuilder('/');
 		$builder->setRouteClass(DashedRoute::class);
 		$builder->connect('/:controller/:action/*');
+		$builder->fallbacks(DashedRoute::class);
 		$builder->plugin('Meta', function (RouteBuilder $routes): void {
 			$routes->fallbacks(DashedRoute::class);
 		});
