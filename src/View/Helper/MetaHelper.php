@@ -50,6 +50,17 @@ class MetaHelper extends Helper {
 	];
 
 	/**
+	 * JSON-LD structured data storage.
+	 *
+	 * @var array<string, array<string, mixed>|null>
+	 */
+	protected array $_jsonLd = [
+		'breadcrumbs' => null,
+		'article' => null,
+		'organization' => null,
+	];
+
+	/**
 	 * Class Constructor
 	 *
 	 * Merges defaults with
@@ -577,6 +588,23 @@ class MetaHelper extends Helper {
 		];
 
 		return (string)$this->Html->meta($array);
+	}
+
+	/**
+	 * Render JSON-LD script tag.
+	 *
+	 * @param array<string, mixed> $data Schema data without @context.
+	 * @return string
+	 */
+	protected function renderJsonLd(array $data): string {
+		$data = ['@context' => 'https://schema.org'] + $data;
+
+		$flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+		if (Configure::read('debug')) {
+			$flags |= JSON_PRETTY_PRINT;
+		}
+
+		return '<script type="application/ld+json">' . json_encode($data, $flags) . '</script>';
 	}
 
 	/**
