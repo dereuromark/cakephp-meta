@@ -603,6 +603,66 @@ class MetaHelper extends Helper {
 	}
 
 	/**
+	 * Set article JSON-LD structured data.
+	 *
+	 * @param array<string, mixed> $data Article data with required 'headline' key.
+	 * @throws \InvalidArgumentException If headline is missing.
+	 * @return void
+	 */
+	public function setArticle(array $data): void {
+		if (!isset($data['headline']) || !is_string($data['headline'])) {
+			throw new InvalidArgumentException("Article requires a 'headline' string.");
+		}
+
+		$article = [
+			'@type' => 'Article',
+			'headline' => $data['headline'],
+		];
+
+		if (isset($data['author'])) {
+			if (is_string($data['author'])) {
+				$article['author'] = [
+					'@type' => 'Person',
+					'name' => $data['author'],
+				];
+			} else {
+				$article['author'] = $data['author'];
+			}
+		}
+
+		if (isset($data['datePublished'])) {
+			$article['datePublished'] = $data['datePublished'];
+		}
+
+		if (isset($data['dateModified'])) {
+			$article['dateModified'] = $data['dateModified'];
+		}
+
+		if (isset($data['image'])) {
+			$article['image'] = $data['image'];
+		}
+
+		if (isset($data['description'])) {
+			$article['description'] = $data['description'];
+		}
+
+		$this->_jsonLd['article'] = $article;
+	}
+
+	/**
+	 * Get article JSON-LD output.
+	 *
+	 * @return string|null
+	 */
+	public function getArticle(): ?string {
+		if ($this->_jsonLd['article'] === null) {
+			return null;
+		}
+
+		return $this->renderJsonLd($this->_jsonLd['article']);
+	}
+
+	/**
 	 * @param string|null $type
 	 * @return string
 	 */
