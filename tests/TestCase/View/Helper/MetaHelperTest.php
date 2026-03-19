@@ -499,6 +499,88 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testSetOrganization(): void {
+		$this->Meta->setOrganization([
+			'name' => 'Acme Inc',
+			'url' => 'https://acme.com',
+			'logo' => 'https://acme.com/logo.png',
+			'sameAs' => [
+				'https://twitter.com/acme',
+				'https://facebook.com/acme',
+			],
+		]);
+
+		$result = $this->Meta->getOrganization();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('"@type":', $result);
+		$this->assertStringContainsString('Organization', $result);
+		$this->assertStringContainsString('"name":', $result);
+		$this->assertStringContainsString('Acme Inc', $result);
+		$this->assertStringContainsString('https://acme.com', $result);
+		$this->assertStringContainsString('"sameAs":', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetOrganizationMissingName(): void {
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessage("Organization requires a 'name' string.");
+		$this->Meta->setOrganization([
+			'url' => 'https://acme.com',
+		]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetOrganizationFromConfig(): void {
+		Configure::write('Meta.organization', [
+			'name' => 'Global Corp',
+			'url' => 'https://global.com',
+		]);
+		$this->Meta = new MetaHelper($this->View);
+
+		$this->Meta->setOrganization([]);
+
+		$result = $this->Meta->getOrganization();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('Global Corp', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetOrganizationConfigMerge(): void {
+		Configure::write('Meta.organization', [
+			'name' => 'Global Corp',
+			'url' => 'https://global.com',
+			'logo' => 'https://global.com/logo.png',
+		]);
+		$this->Meta = new MetaHelper($this->View);
+
+		$this->Meta->setOrganization([
+			'name' => 'Local Division',
+		]);
+
+		$result = $this->Meta->getOrganization();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('Local Division', $result);
+		$this->assertStringContainsString('https://global.com', $result);
+		$this->assertStringContainsString('logo.png', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testGetOrganizationNull(): void {
+		$result = $this->Meta->getOrganization();
+		$this->assertNull($result);
+	}
+
+	/**
 	 * TearDown method
 	 *
 	 * @return void
