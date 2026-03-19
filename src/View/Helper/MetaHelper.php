@@ -653,6 +653,9 @@ class MetaHelper extends Helper {
 		$data = ['@context' => 'https://schema.org'] + $data;
 
 		$flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+		if (Configure::read('debug')) {
+			$flags |= JSON_PRETTY_PRINT;
+		}
 
 		return '<script type="application/ld+json">' . json_encode($data, $flags) . '</script>';
 	}

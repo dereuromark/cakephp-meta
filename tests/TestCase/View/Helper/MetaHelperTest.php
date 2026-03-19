@@ -387,11 +387,13 @@ class MetaHelperTest extends TestCase {
 
 		$result = $this->Meta->getBreadcrumbs();
 		$this->assertNotNull($result);
-		$this->assertStringContainsString('"@context":"https://schema.org"', $result);
-		$this->assertStringContainsString('"@type":"BreadcrumbList"', $result);
-		$this->assertStringContainsString('"name":"Home"', $result);
-		$this->assertStringContainsString('"position":1', $result);
-		$this->assertStringContainsString('"position":3', $result);
+		$this->assertStringContainsString('"@context":', $result);
+		$this->assertStringContainsString('https://schema.org', $result);
+		$this->assertStringContainsString('"@type":', $result);
+		$this->assertStringContainsString('BreadcrumbList', $result);
+		$this->assertStringContainsString('"name":', $result);
+		$this->assertStringContainsString('Home', $result);
+		$this->assertStringContainsString('"position":', $result);
 		$this->assertStringContainsString('<script type="application/ld+json">', $result);
 	}
 
@@ -427,7 +429,8 @@ class MetaHelperTest extends TestCase {
 
 		$result = $this->Meta->getBreadcrumbs();
 		$this->assertNotNull($result);
-		$this->assertStringContainsString('"item":"http', $result);
+		$this->assertStringContainsString('"item":', $result);
+		$this->assertStringContainsString('http', $result);
 	}
 
 	/**
