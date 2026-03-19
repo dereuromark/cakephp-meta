@@ -374,6 +374,69 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testSetBreadcrumbs(): void {
+		$this->Meta->setBreadcrumbs([
+			['name' => 'Home', 'url' => '/'],
+			['name' => 'Blog', 'url' => '/blog'],
+			['name' => 'My Post'],
+		]);
+
+		$result = $this->Meta->getBreadcrumbs();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('"@context":"https://schema.org"', $result);
+		$this->assertStringContainsString('"@type":"BreadcrumbList"', $result);
+		$this->assertStringContainsString('"name":"Home"', $result);
+		$this->assertStringContainsString('"position":1', $result);
+		$this->assertStringContainsString('"position":3', $result);
+		$this->assertStringContainsString('<script type="application/ld+json">', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetBreadcrumbsEmpty(): void {
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessage('Breadcrumbs require at least one item.');
+		$this->Meta->setBreadcrumbs([]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetBreadcrumbsMissingName(): void {
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessage("Breadcrumb item 1 requires a 'name' string.");
+		$this->Meta->setBreadcrumbs([
+			['name' => 'Home', 'url' => '/'],
+			['url' => '/blog'],
+		]);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testSetBreadcrumbsUrlArray(): void {
+		$this->Meta->setBreadcrumbs([
+			['name' => 'Home', 'url' => ['controller' => 'Pages', 'action' => 'home']],
+			['name' => 'Current'],
+		]);
+
+		$result = $this->Meta->getBreadcrumbs();
+		$this->assertNotNull($result);
+		$this->assertStringContainsString('"item":"http', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testGetBreadcrumbsNull(): void {
+		$result = $this->Meta->getBreadcrumbs();
+		$this->assertNull($result);
+	}
+
+	/**
 	 * TearDown method
 	 *
 	 * @return void
