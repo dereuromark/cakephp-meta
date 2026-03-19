@@ -869,6 +869,21 @@ class MetaHelper extends Helper {
 			$results[] = $out;
 		}
 
+		// Append JSON-LD structured data
+		$jsonLdOutput = [];
+		if ($this->_jsonLd['breadcrumbs'] !== null) {
+			$jsonLdOutput[] = $this->getBreadcrumbs();
+		}
+		if ($this->_jsonLd['article'] !== null) {
+			$jsonLdOutput[] = $this->getArticle();
+		}
+		if ($this->_jsonLd['organization'] !== null) {
+			$jsonLdOutput[] = $this->getOrganization();
+		}
+		if ($jsonLdOutput !== []) {
+			$results[] = implode($options['implode'], $jsonLdOutput);
+		}
+
 		return implode($options['implode'], $results);
 	}
 

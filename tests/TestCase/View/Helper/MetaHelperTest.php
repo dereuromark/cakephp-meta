@@ -581,6 +581,35 @@ class MetaHelperTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testOutIncludesJsonLd(): void {
+		$this->Meta->setBreadcrumbs([
+			['name' => 'Home', 'url' => '/'],
+		]);
+		$this->Meta->setArticle([
+			'headline' => 'Test Article',
+		]);
+		$this->Meta->setOrganization([
+			'name' => 'Test Org',
+		]);
+
+		$result = $this->Meta->out();
+		$this->assertStringContainsString('<script type="application/ld+json">', $result);
+		$this->assertStringContainsString('BreadcrumbList', $result);
+		$this->assertStringContainsString('Article', $result);
+		$this->assertStringContainsString('Organization', $result);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testOutWithoutJsonLd(): void {
+		$result = $this->Meta->out();
+		$this->assertStringNotContainsString('application/ld+json', $result);
+	}
+
+	/**
 	 * TearDown method
 	 *
 	 * @return void
