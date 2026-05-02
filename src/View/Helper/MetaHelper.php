@@ -532,8 +532,11 @@ class MetaHelper extends Helper {
 			$url = $this->Url->build($url, $options);
 		}
 
+		// Escape attribute value: developers commonly wire canonical URLs from CMS
+		// content (e.g. `setCanonical($entity->canonical_url)`), so a raw
+		// attacker-supplied URL must not be able to break out of the `href` attribute.
 		$array = [
-			'url' => $url,
+			'url' => h((string)$url),
 			'rel' => 'canonical',
 		];
 
@@ -766,7 +769,14 @@ class MetaHelper extends Helper {
 	protected function renderJsonLd(array $data): string {
 		$data = ['@context' => 'https://schema.org'] + $data;
 
-		$flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+		// Hex-encode `<`, `>`, `&`, `'`, `"` so attacker-controlled string values cannot
+		// terminate the inline `<script>` block (e.g. via `</script>`) or break out of
+		// surrounding HTML context. See OWASP "JSON in HTML" guidance.
+		$flags = JSON_UNESCAPED_UNICODE
+			| JSON_HEX_TAG
+			| JSON_HEX_AMP
+			| JSON_HEX_APOS
+			| JSON_HEX_QUOT;
 		if (Configure::read('debug')) {
 			$flags |= JSON_PRETTY_PRINT;
 		}
