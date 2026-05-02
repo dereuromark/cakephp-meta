@@ -389,7 +389,7 @@ class MetaHelperTest extends TestCase {
 		$result = $this->Meta->getBreadcrumbs();
 		$this->assertNotNull($result);
 		$this->assertStringContainsString('"@context":', $result);
-		$this->assertStringContainsString('https://schema.org', $result);
+		$this->assertStringContainsString('schema.org', $result);
 		$this->assertStringContainsString('"@type":', $result);
 		$this->assertStringContainsString('BreadcrumbList', $result);
 		$this->assertStringContainsString('"name":', $result);
@@ -519,7 +519,7 @@ class MetaHelperTest extends TestCase {
 		$this->assertStringContainsString('Organization', $result);
 		$this->assertStringContainsString('"name":', $result);
 		$this->assertStringContainsString('Acme Inc', $result);
-		$this->assertStringContainsString('https://acme.com', $result);
+		$this->assertStringContainsString('acme.com', $result);
 		$this->assertStringContainsString('"sameAs":', $result);
 	}
 
@@ -569,7 +569,7 @@ class MetaHelperTest extends TestCase {
 		$result = $this->Meta->getOrganization();
 		$this->assertNotNull($result);
 		$this->assertStringContainsString('Local Division', $result);
-		$this->assertStringContainsString('https://global.com', $result);
+		$this->assertStringContainsString('global.com', $result);
 		$this->assertStringContainsString('logo.png', $result);
 	}
 
@@ -627,6 +627,97 @@ class MetaHelperTest extends TestCase {
 		Configure::write('debug', true);
 		$result = $this->Meta->getOrganization();
 		$this->assertStringContainsString("\n", $result);
+	}
+
+	/**
+	 * Verifies that attacker-controlled JSON-LD string content cannot terminate the
+	 * inline `<script>` block. `<` and `>` must be hex-encoded in the JSON output.
+	 *
+	 * @return void
+	 */
+	public function testJsonLdEscapesScriptTagsInArticle(): void {
+		Configure::write('debug', false);
+
+		$rawAngleOpen = chr(60);
+		$rawAngleClose = chr(62);
+		$payload = $rawAngleOpen . '/script' . $rawAngleClose . $rawAngleOpen . 'img src=x onerror=alert(1)' . $rawAngleClose;
+		$this->Meta->setArticle([
+			'headline' => $payload,
+			'description' => $payload,
+		]);
+
+		$result = $this->Meta->getArticle();
+		$this->assertNotNull($result);
+		// Raw `</script><img...>` payload must NOT appear inside the JSON body.
+		$this->assertStringNotContainsString($payload, $result);
+		$this->assertStringNotContainsString($rawAngleOpen . '/script' . $rawAngleClose . $rawAngleOpen . 'img', $result);
+		// JSON_HEX_TAG hex-escapes `<` to < and `>` to >.
+		$this->assertStringContainsString('\\u003C', $result);
+		$this->assertStringContainsString('\\u003E', $result);
+		// The closing `</script>` of the actual tag remains exactly once at the end.
+		$this->assertSame(1, substr_count($result, $rawAngleOpen . '/script' . $rawAngleClose));
+	}
+
+	/**
+	 * Same hardening applies to BreadcrumbList items.
+	 *
+	 * @return void
+	 */
+	public function testJsonLdEscapesScriptTagsInBreadcrumbs(): void {
+		Configure::write('debug', false);
+
+		$rawAngleOpen = chr(60);
+		$rawAngleClose = chr(62);
+		$payload = $rawAngleOpen . '/script' . $rawAngleClose . $rawAngleOpen . 'svg/onload=alert(1)' . $rawAngleClose;
+
+		$this->Meta->setBreadcrumbs([
+			['name' => $payload],
+		]);
+
+		$result = $this->Meta->getBreadcrumbs();
+		$this->assertNotNull($result);
+		$this->assertStringNotContainsString($payload, $result);
+		$this->assertStringNotContainsString($rawAngleOpen . 'svg', $result);
+		$this->assertStringContainsString('\\u003C', $result);
+		$this->assertSame(1, substr_count($result, $rawAngleOpen . '/script' . $rawAngleClose));
+	}
+
+	/**
+	 * Quotes and ampersands in JSON-LD content are also hex-escaped to prevent
+	 * attribute breakout in any HTML context that might interpolate the script body.
+	 *
+	 * @return void
+	 */
+	public function testJsonLdEscapesQuotesAndAmpersands(): void {
+		Configure::write('debug', false);
+
+		$this->Meta->setOrganization([
+			'name' => 'Foo ' . chr(34) . ' ' . chr(38) . ' ' . chr(39) . ' Bar',
+		]);
+
+		$result = $this->Meta->getOrganization();
+		$this->assertNotNull($result);
+		// JSON_HEX_QUOT, JSON_HEX_AMP, JSON_HEX_APOS convert `"`, `&`, `'` to \uXXXX escapes.
+		$this->assertStringContainsString('\\u0022', $result);
+		$this->assertStringContainsString('\\u0026', $result);
+		$this->assertStringContainsString('\\u0027', $result);
+	}
+
+	/**
+	 * An attacker-supplied canonical URL must not be able to break out of the
+	 * `href` attribute via an unescaped quote.
+	 *
+	 * @return void
+	 */
+	public function testCanonicalEscapesAttackerControlledUrl(): void {
+		$payload = 'https://evil.test/" onclick="alert(1)';
+		$this->Meta->setCanonical($payload);
+
+		$result = $this->Meta->getCanonical();
+		// Raw breakout sequence must NOT appear in the rendered tag.
+		$this->assertStringNotContainsString('" onclick="alert(1)', $result);
+		// Escaped form MUST appear (h() encodes `"` to `&quot;`).
+		$this->assertStringContainsString('&quot;', $result);
 	}
 
 	/**
