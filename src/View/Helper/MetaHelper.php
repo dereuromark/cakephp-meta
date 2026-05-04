@@ -112,7 +112,7 @@ class MetaHelper extends Helper {
 			if ($controller && $action) {
 				$controllerName = Inflector::humanize(Inflector::underscore($controller));
 				$actionName = Inflector::humanize(Inflector::underscore($action));
-				$this->meta['title'] = __($controllerName) . ' - ' . __($actionName);
+				$this->meta['title'] = __d('meta', $controllerName) . ' - ' . __d('meta', $actionName);
 			}
 		}
 	}
