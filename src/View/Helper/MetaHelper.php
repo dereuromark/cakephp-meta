@@ -528,7 +528,7 @@ class MetaHelper extends Helper {
 			$url = $this->getView()->getRequest()->getAttribute('here');
 		} elseif (is_array($url)) {
 			$url = $this->Url->build($url, $options);
-		} elseif (!preg_match('/^([a-z][a-z0-9+\-.]*:)?\/\//', (string) $url)) {
+		} elseif (!preg_match('/^([a-z][a-z0-9+\-.]*:)?\/\//', (string)$url)) {
 			$url = $this->Url->build($url, $options);
 		}
 
@@ -623,11 +623,11 @@ class MetaHelper extends Helper {
 		];
 
 		if (isset($data['author'])) {
-            $article['author'] = is_string($data['author']) ? [
-					'@type' => 'Person',
-					'name' => $data['author'],
-				] : $data['author'];
-        }
+			$article['author'] = is_string($data['author']) ? [
+				'@type' => 'Person',
+				'name' => $data['author'],
+			] : $data['author'];
+		}
 
 		if (isset($data['datePublished'])) {
 			$article['datePublished'] = $data['datePublished'];
