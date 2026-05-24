@@ -655,7 +655,7 @@ class MetaHelperTest extends TestCase {
 		$this->assertStringContainsString('\\u003C', $result);
 		$this->assertStringContainsString('\\u003E', $result);
 		// The closing `</script>` of the actual tag remains exactly once at the end.
-		$this->assertSame(1, substr_count($result, $rawAngleOpen . '/script' . $rawAngleClose));
+		$this->assertSame(1, substr_count((string)$result, $rawAngleOpen . '/script' . $rawAngleClose));
 	}
 
 	/**
@@ -679,7 +679,7 @@ class MetaHelperTest extends TestCase {
 		$this->assertStringNotContainsString($payload, $result);
 		$this->assertStringNotContainsString($rawAngleOpen . 'svg', $result);
 		$this->assertStringContainsString('\\u003C', $result);
-		$this->assertSame(1, substr_count($result, $rawAngleOpen . '/script' . $rawAngleClose));
+		$this->assertSame(1, substr_count((string)$result, $rawAngleOpen . '/script' . $rawAngleClose));
 	}
 
 	/**

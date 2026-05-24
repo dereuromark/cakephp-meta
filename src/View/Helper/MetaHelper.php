@@ -130,7 +130,7 @@ class MetaHelper extends Helper {
 			return null;
 		}
 
-		if (strpos($locale, '_') !== false) {
+		if (str_contains($locale, '_')) {
 			$locale = str_replace('_', '-', $locale);
 		}
 
@@ -528,7 +528,7 @@ class MetaHelper extends Helper {
 			$url = $this->getView()->getRequest()->getAttribute('here');
 		} elseif (is_array($url)) {
 			$url = $this->Url->build($url, $options);
-		} elseif (!preg_match('/^([a-z][a-z0-9+\-.]*:)?\/\//', $url)) {
+		} elseif (!preg_match('/^([a-z][a-z0-9+\-.]*:)?\/\//', (string)$url)) {
 			$url = $this->Url->build($url, $options);
 		}
 
@@ -623,14 +623,10 @@ class MetaHelper extends Helper {
 		];
 
 		if (isset($data['author'])) {
-			if (is_string($data['author'])) {
-				$article['author'] = [
-					'@type' => 'Person',
-					'name' => $data['author'],
-				];
-			} else {
-				$article['author'] = $data['author'];
-			}
+			$article['author'] = is_string($data['author']) ? [
+				'@type' => 'Person',
+				'name' => $data['author'],
+			] : $data['author'];
 		}
 
 		if (isset($data['datePublished'])) {
@@ -868,7 +864,7 @@ class MetaHelper extends Helper {
 
 		$results = [];
 
-		foreach ($this->meta as $header => $value) {
+		foreach (array_keys($this->meta) as $header) {
 			if (in_array($header, $options['skip'])) {
 				continue;
 			}
