@@ -864,7 +864,7 @@ class MetaHelper extends Helper {
 
 		$results = [];
 
-		foreach (array_keys($this->meta) as $header) {
+		foreach ($this->meta as $header => $_) {
 			if (in_array($header, $options['skip'])) {
 				continue;
 			}
