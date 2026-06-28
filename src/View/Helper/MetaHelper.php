@@ -19,7 +19,7 @@ class MetaHelper extends Helper {
 	/**
 	 * Included helpers.
 	 *
-	 * @var array
+	 * @var array<int|string, array<string, mixed>|string>
 	 */
 	protected array $helpers = ['Html', 'Url'];
 
