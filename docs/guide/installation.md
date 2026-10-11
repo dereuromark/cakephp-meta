@@ -3,11 +3,13 @@
 From your CakePHP application directory, install the package:
 
 ```bash
-composer require dereuromark/cakephp-meta
+composer require dereuromark/cakephp-meta:dev-cake6
 ```
 
+For this development branch, the application's root `composer.json` must allow development dependencies with `"minimum-stability": "dev"`. Set `"prefer-stable": true` to prefer stable packages when their constraints permit it.
+
 Composer checks the supported PHP and CakePHP versions. The current constraints
-are in [composer.json](https://github.com/dereuromark/cakephp-meta/blob/master/composer.json).
+are in [composer.json](https://github.com/dereuromark/cakephp-meta/blob/cake6/composer.json).
 
 Load the plugin:
 

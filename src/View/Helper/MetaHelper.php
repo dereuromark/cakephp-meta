@@ -29,7 +29,7 @@ class MetaHelper extends Helper {
 	 *
 	 * @var array<string, mixed>
 	 */
-	protected array $_defaultConfig = [
+	protected array $defaultConfig = [
 		'multiLanguage' => true, // Disable to only display the localized tag to the current language
 	];
 
