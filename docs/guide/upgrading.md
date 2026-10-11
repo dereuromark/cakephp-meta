@@ -3,6 +3,10 @@
 This branch supports the dependency versions declared in Composer. Older
 CakePHP branches are listed in the [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
 
+## CakePHP 6 development branch
+
+The `cake6` branch runs against CakePHP 6. Custom helper subclasses use `$defaultConfig` for inherited configuration defaults. The `master` branch remains available for CakePHP 5.
+
 ## Output corrections
 
 - Missing titles are omitted, and robot arrays can replace string settings.

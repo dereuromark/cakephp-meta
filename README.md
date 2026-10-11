@@ -1,9 +1,9 @@
 # Meta plugin for CakePHP
-[![CI](https://github.com/dereuromark/cakephp-meta/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/dereuromark/cakephp-meta/actions/workflows/ci.yml?query=branch%3Amaster)
+[![CI](https://github.com/dereuromark/cakephp-meta/actions/workflows/ci.yml/badge.svg?branch=cake6)](https://github.com/dereuromark/cakephp-meta/actions/workflows/ci.yml?query=branch%3Acake6)
 [![codecov](https://codecov.io/gh/dereuromark/cakephp-meta/branch/master/graph/badge.svg)](https://codecov.io/gh/dereuromark/cakephp-meta)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat)](https://phpstan.org/)
 [![Latest Stable Version](https://poser.pugx.org/dereuromark/cakephp-meta/v/stable.svg)](https://packagist.org/packages/dereuromark/cakephp-meta)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.5-8892BF.svg)](https://php.net/)
 [![License](https://poser.pugx.org/dereuromark/cakephp-meta/license.svg)](LICENSE)
 [![Total Downloads](https://poser.pugx.org/dereuromark/cakephp-meta/d/total.svg)](https://packagist.org/packages/dereuromark/cakephp-meta)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-purple.svg?style=flat-square)](https://github.com/php-fig-rectified/fig-rectified-standards)
@@ -27,3 +27,5 @@ configuration, social metadata, and JSON-LD.
 
 The plugin provides a view helper. Database storage and admin editing belong to
 the application; pass your own record values to the view as `_meta` data.
+
+The `cake6` development branch targets CakePHP 6. Use `master` for CakePHP 5 applications.
