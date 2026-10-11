@@ -1,14 +1,7 @@
-# CakePHP Meta Plugin Documentation
+# CakePHP Meta documentation
 
-## Installation
-* [Installation](Install.md)
+Read [Installation](https://dereuromark.github.io/cakephp-meta/guide/installation),
+then [Getting started](https://dereuromark.github.io/cakephp-meta/guide/getting-started).
 
-## Documentation
-* [MetaHelper](MetaHelper.md)
-
-## Contributing
-Your help is greatly appreciated.
-
-Make sure tests pass: `composer test`
-
-Make sure CS pass: `composer cs-check` and `composer cs-fix` to auto-fix
+The [website](https://dereuromark.github.io/cakephp-meta/) includes configuration,
+social metadata, structured data, and upgrade notes.

@@ -10,6 +10,7 @@ use Cake\Routing\Router;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use InvalidArgumentException;
+use JsonException;
 use Meta\View\Helper\MetaHelper;
 use RuntimeException;
 
@@ -355,7 +356,7 @@ class MetaHelperTest extends TestCase {
 <meta name="description" content="A sentence" lang="de">
 <meta name="keywords" content="foo bar" lang="de"><meta name="keywords" content="foo bar EN" lang="en">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="x" content="y">
-<meta name="http-equiv" content="0">$#';
+<meta http-equiv="expires" content="0">$#';
 		$this->assertMatchesRegularExpression($pattern, $result);
 	}
 
@@ -731,6 +732,106 @@ class MetaHelperTest extends TestCase {
 		unset($this->Meta);
 
 		ini_set('intl.default_locale', $this->defaultLocale);
+	}
+
+	public function testTitleEscapesHtml(): void {
+		$this->Meta->setTitle('</title><script>alert(1)</script>');
+		$this->assertSame('<title>&lt;/title&gt;&lt;script&gt;alert(1)&lt;/script&gt;</title>', $this->Meta->getTitle());
+	}
+
+	public function testSizedIconEscapesUrlAndIsIncludedInOut(): void {
+		$this->Meta->setSizesIcon('/icon.png" onerror="alert(1)', 32);
+		$this->assertSame('<link href="/icon.png&quot; onerror=&quot;alert(1)" rel="icon" sizes="32x32">', $this->Meta->out('sizesIcon'));
+		$this->assertStringContainsString('sizes="32x32"', $this->Meta->out());
+	}
+
+	public function testSocialMetadataUsesCorrectAttributeNames(): void {
+		$meta = new MetaHelper($this->View, ['og:title' => 'Page', 'twitter:card' => 'summary']);
+		$this->assertSame('<meta content="Page" property="og:title">', $meta->out('og:title'));
+		$this->assertSame('<meta name="twitter:card" content="summary">', $meta->out('twitter:card'));
+	}
+
+	public function testOrganizationDefaultsAreNotRenderedAsMetaTags(): void {
+		Configure::write('Meta.organization', ['name' => 'Example', 'url' => 'https://example.com']);
+		$meta = new MetaHelper($this->View, ['multiLanguage' => false]);
+		$meta->setOrganization([]);
+		$output = $meta->out();
+		$this->assertStringNotContainsString('name="organization"', $output);
+		$this->assertStringNotContainsString('name="multiLanguage"', $output);
+		$this->assertStringContainsString('"@type": "Organization"', $output);
+	}
+
+	public function testAutoLanguageAndScalarDefaultsCanBeUpdated(): void {
+		$meta = new MetaHelper($this->View, ['language' => true, 'description' => 'Default description', 'keywords' => 'default']);
+		$meta->setDescription('New description');
+		$meta->setKeywords(['new', 'keywords']);
+		$this->assertSame('<meta name="description" content="New description" lang="de-DE">', $meta->getDescription());
+		$this->assertSame('<meta name="keywords" content="new,keywords" lang="de-DE">', $meta->getKeywords());
+	}
+
+	public function testSingleLanguageConfigurationSelectsCurrentLocale(): void {
+		$meta = new MetaHelper($this->View, [
+			'language' => 'de',
+			'multiLanguage' => false,
+			'description' => ['de' => 'Deutsch', 'en' => 'English'],
+			'keywords' => ['de' => ['eins'], 'en' => ['one']],
+		]);
+		$this->assertSame('<meta name="description" content="Deutsch" lang="de">', $meta->getDescription());
+		$this->assertSame('<meta name="keywords" content="eins" lang="de">', $meta->getKeywords());
+	}
+
+	public function testBreadcrumbPositionsIgnoreInputKeys(): void {
+		$this->Meta->setBreadcrumbs([5 => ['name' => 'Home'], 9 => ['name' => 'Page']]);
+		$output = $this->Meta->getBreadcrumbs();
+		preg_match('#<script[^>]*>(.*)</script>#s', $output, $matches);
+		$data = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
+		$this->assertSame([1, 2], array_column($data['itemListElement'], 'position'));
+	}
+
+	public function testInvalidJsonLdCannotSilentlyProduceEmptyScript(): void {
+		$this->Meta->setArticle(['headline' => "\xB1"]);
+		$this->expectException(JsonException::class);
+		$this->Meta->getArticle();
+	}
+
+	public function testMissingTitleDoesNotLeaveAnOpenElement(): void {
+		$meta = new MetaHelper(new View(new ServerRequest()));
+		$this->assertSame('', $meta->getTitle());
+	}
+
+	public function testRobotsArrayCanReplaceAStringConfiguration(): void {
+		Configure::write('Meta.robots', 'noindex,nofollow');
+		$meta = new MetaHelper($this->View, ['robots' => ['index' => true]]);
+		$this->assertSame('<meta name="robots" content="index">', $meta->getRobots());
+		$meta->setRobots('noindex');
+		$meta->setRobots(['follow' => true]);
+		$this->assertSame('<meta name="robots" content="follow">', $meta->getRobots());
+	}
+
+	public function testAutomaticCanonicalFullBaseDoesNotDuplicateApplicationBase(): void {
+		$base = Router::fullBaseUrl();
+		Router::fullBaseUrl('https://example.com');
+		try {
+			$request = (new ServerRequest(['url' => '/page']))->withAttribute('base', '/subdir');
+			$meta = new MetaHelper(new View($request), ['canonical' => true]);
+			$this->assertSame('<link rel="canonical" href="https://example.com/subdir/page">', $meta->getCanonical(true));
+		} finally {
+			Router::fullBaseUrl($base);
+		}
+	}
+
+	public function testCanonicalRouteQueryIsEscapedOnce(): void {
+		$this->Meta->setCanonical(['controller' => 'Pages', 'action' => 'view', '?' => ['a' => 1, 'b' => 2]]);
+		$output = $this->Meta->getCanonical();
+		$this->assertStringContainsString('?a=1&amp;b=2', $output);
+		$this->assertStringNotContainsString('&amp;amp;', $output);
+	}
+
+	public function testBreadcrumbRouteQueryRetainsUrlCharacters(): void {
+		$this->Meta->setBreadcrumbs([['name' => 'Page', 'url' => ['controller' => 'Pages', 'action' => 'view', '?' => ['a' => 1, 'b' => 2]]]]);
+		preg_match('#<script[^>]*>(.*)</script>#s', $this->Meta->getBreadcrumbs(), $matches);
+		$data = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
+		$this->assertStringContainsString('?a=1&b=2', $data['itemListElement'][0]['item']);
 	}
 
 }

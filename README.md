@@ -8,7 +8,8 @@
 [![Total Downloads](https://poser.pugx.org/dereuromark/cakephp-meta/d/total.svg)](https://packagist.org/packages/dereuromark/cakephp-meta)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-purple.svg?style=flat-square)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
-This branch is for **CakePHP 5.1+**. For details see [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
+For older CakePHP branches see the [version map](https://github.com/dereuromark/cakephp-meta/wiki#cakephp-version-map).
+Composer declares the current supported dependencies.
 
 ## What is this plugin for?
 This plugin helps to maintain and output meta tags for your HTML pages, including SEO relevant parts like
@@ -17,12 +18,12 @@ This plugin helps to maintain and output meta tags for your HTML pages, includin
 It can be used as a simple view-only approach using the included helper, it can also be DB driven if desired, or dynamically
 be created from the controller context by passing the meta data to the view.
 
-## Installation and Usage
-Please see [Docs](docs)
+## Installation and usage
 
-## ToDos
+Start with [Installation](https://dereuromark.github.io/cakephp-meta/guide/installation),
+then follow [Getting started](https://dereuromark.github.io/cakephp-meta/guide/getting-started).
+The [documentation website](https://dereuromark.github.io/cakephp-meta/) covers
+configuration, social metadata, and JSON-LD.
 
-### DB driven approach
-Adding a Meta component and Metas Table we can pull data from an admin backend inserted DB table.
-Those could overwrite then any defaults set via actions or ctp templates.
-
+The plugin provides a view helper. Database storage and admin editing belong to
+the application; pass your own record values to the view as `_meta` data.
