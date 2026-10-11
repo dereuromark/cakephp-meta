@@ -27,7 +27,7 @@ export default defineConfig({
     sidebar: [{ text: 'Meta plugin', items: guide }],
     search: { provider: 'local' },
     socialLinks: [{ icon: 'github', link: 'https://github.com/dereuromark/cakephp-meta' }],
-    editLink: { pattern: 'https://github.com/dereuromark/cakephp-meta/edit/master/docs/:path' },
+    editLink: { pattern: 'https://github.com/dereuromark/cakephp-meta/edit/cake6/docs/:path' },
     footer: { message: 'Released under the MIT License.', copyright: 'Copyright Mark Scherer' },
   },
 })
