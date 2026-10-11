@@ -4,7 +4,7 @@
  * Meta Example Configuration
  *
  * Merge the keys below into your application's config/app.php (or
- * config/app_local.php) — do not replace the whole file, since this snippet
+ * config/app_local.php). Do not replace the whole file, since this snippet
  * only contains this plugin's configuration. When copying entries that
  * reference imported classes, use fully-qualified class names or move the
  * `use` imports to the top of the target file. Customize the values as needed.
@@ -17,8 +17,7 @@ return [
 	'Meta' => [
 		// NOTE: multiLanguage is a HELPER option, not a Configure key. Set it as a
 		// helper option when loading the Meta helper in your AppView, NOT here:
-		// MetaHelper reads it from its own config, and placing it under Configure('Meta')
-		// makes out() emit a stray <meta name="multiLanguage"> tag. Default: true.
+		// MetaHelper reads it from its own helper config. Default: true.
 
 		// Default page title. Set to null to auto-generate from the current
 		// controller/action (humanized). Default: null.
@@ -64,9 +63,7 @@ return [
 		// MetaHelper::setOrganization() and merged with the per-call data passed to it.
 		// A `name` (string) is required once merged. Sub-keys: name, url, logo,
 		// contactPoint, sameAs. Default: not set.
-		// WARNING: if you call the default out() after setting this under
-		// Configure('Meta'), it is also emitted as a stray meta tag — prefer passing
-		// the data directly to setOrganization().
+		// Call setOrganization() to activate the merged JSON-LD output.
 		// 'organization' => [
 		//     'name' => 'Acme Inc.',
 		//     'url' => 'https://example.com',

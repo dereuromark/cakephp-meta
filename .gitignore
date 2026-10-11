@@ -6,3 +6,7 @@ tmp/
 .idea/
 composer.phar
 .phpcs.cache
+
+docs/node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
