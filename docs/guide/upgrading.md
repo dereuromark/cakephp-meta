@@ -16,10 +16,10 @@ CakePHP branches are listed in the [version map](https://github.com/dereuromark/
 - Automatic language selection applies to descriptions and keywords. Scalar
   defaults can be replaced through their setters without an offset error.
 - With `multiLanguage: false`, combined description and keyword getters select
-  the current language, with wildcard fallback.
+  the current language, base language, wildcard, or sole stored entry.
 - Breadcrumb positions follow iteration order rather than input keys.
-- JSON-LD encoding failures raise `JsonException` instead of emitting an empty
-  script silently.
+- Invalid UTF-8 in JSON-LD is replaced safely. Unsupported values and other
+  encoding failures raise `JsonException` instead of emitting an empty script.
 
 Review snapshot assertions that depend on the previous incorrect markup.
 The beginner layout replaces duplicate title, charset, icon, and robots output;

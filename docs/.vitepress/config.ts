@@ -15,6 +15,7 @@ export default defineConfig({
   description: 'HTML metadata, social preview tags, and JSON-LD for CakePHP views.',
   base: '/cakephp-meta/',
   cleanUrls: true,
+  srcExclude: ['README.md', 'Install.md', 'MetaHelper.md', 'Contributing.md'],
   head: [['link', { rel: 'icon', href: '/cakephp-meta/favicon.svg', type: 'image/svg+xml' }]],
   themeConfig: {
     logo: '/logo.svg',

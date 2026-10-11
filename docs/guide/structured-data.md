@@ -68,8 +68,8 @@ individual `getBreadcrumbs()`, `getArticle()`, and `getOrganization()` results;
 they return `null` until their setter has been called.
 
 The helper adds `@context: https://schema.org`, escapes characters that could
-terminate the script, and pretty-prints JSON when `debug` is enabled. Encoding
-failures raise `JsonException`. Missing required helper fields raise
+terminate the script, and pretty-prints JSON when `debug` is enabled. Invalid UTF-8 characters are replaced with the Unicode replacement character.
+Other encoding failures, such as unsupported values, raise `JsonException`. Missing required helper fields raise
 `InvalidArgumentException`.
 
 This validates the helper's required fields, not every schema rule. Check the

@@ -152,6 +152,31 @@ class MetaHelper extends Helper {
 	}
 
 	/**
+	 * @param array<string, mixed> $values
+	 * @return string
+	 */
+	protected function selectedLanguage(array $values): string {
+		$language = $this->currentLanguage();
+		if ($language !== null) {
+			if (array_key_exists($language, $values)) {
+				return $language;
+			}
+			$baseLanguage = explode('-', str_replace('_', '-', $language))[0];
+			if (array_key_exists($baseLanguage, $values)) {
+				return $baseLanguage;
+			}
+		}
+		if (array_key_exists('*', $values)) {
+			return '*';
+		}
+		if (count($values) === 1) {
+			return (string)array_key_first($values);
+		}
+
+		return '*';
+	}
+
+	/**
 	 * @param string $value
 	 * @return void
 	 */
@@ -367,8 +392,7 @@ class MetaHelper extends Helper {
 		}
 
 		if ($lang === null && !$this->getConfig('multiLanguage')) {
-			$language = $this->currentLanguage();
-			$lang = $language !== null && isset($this->meta['description'][$language]) ? $language : '*';
+			$lang = $this->selectedLanguage($this->meta['description']);
 		}
 
 		if ($lang === null) {
@@ -438,8 +462,7 @@ class MetaHelper extends Helper {
 	 */
 	public function getKeywords(?string $lang = null): string {
 		if ($lang === null && !$this->getConfig('multiLanguage') && is_array($this->meta['keywords'])) {
-			$language = $this->currentLanguage();
-			$lang = $language !== null && isset($this->meta['keywords'][$language]) ? $language : '*';
+			$lang = $this->selectedLanguage($this->meta['keywords']);
 		}
 		if ($lang === null) {
 			/** @var array<string, mixed>|string $keywords */
@@ -628,6 +651,7 @@ class MetaHelper extends Helper {
 	/**
 	 * Get breadcrumbs JSON-LD output.
 	 *
+	 * @throws \JsonException When the data cannot be encoded.
 	 * @return string|null
 	 */
 	public function getBreadcrumbs(): ?string {
@@ -684,6 +708,7 @@ class MetaHelper extends Helper {
 	/**
 	 * Get article JSON-LD output.
 	 *
+	 * @throws \JsonException When the data cannot be encoded.
 	 * @return string|null
 	 */
 	public function getArticle(): ?string {
@@ -738,6 +763,7 @@ class MetaHelper extends Helper {
 	/**
 	 * Get organization JSON-LD output.
 	 *
+	 * @throws \JsonException When the data cannot be encoded.
 	 * @return string|null
 	 */
 	public function getOrganization(): ?string {
@@ -793,6 +819,7 @@ class MetaHelper extends Helper {
 	 * Render JSON-LD script tag.
 	 *
 	 * @param array<string, mixed> $data Schema data without @context.
+	 * @throws \JsonException When the data cannot be encoded.
 	 * @return string
 	 */
 	protected function renderJsonLd(array $data): string {
@@ -806,6 +833,7 @@ class MetaHelper extends Helper {
 			| JSON_HEX_AMP
 			| JSON_HEX_APOS
 			| JSON_HEX_QUOT
+			| JSON_INVALID_UTF8_SUBSTITUTE
 			| JSON_THROW_ON_ERROR;
 		if (Configure::read('debug')) {
 			$flags |= JSON_PRETTY_PRINT;

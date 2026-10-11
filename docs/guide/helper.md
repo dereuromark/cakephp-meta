@@ -46,8 +46,9 @@ For example, merge this entry into the array returned by `config/app.php`:
 ```
 
 `multiLanguage` belongs in the helper's loading options or `setConfig()`. It is
-not a metadata tag. The helper does not automatically use `I18n::getLocale()`;
-set `language` explicitly when your application changes locale per request.
+not a metadata tag. With `language: true`, the helper reads the current
+`intl.default_locale`; CakePHP's `I18n::setLocale()` updates that value. Set
+`language` explicitly when you need a different tag value.
 
 ## Common setters
 
@@ -98,7 +99,8 @@ entries. A wildcard entry (`*`) is omitted when explicit language entries exist.
 You can retrieve one language with `getDescription('en')` or `getKeywords('en')`.
 
 With `multiLanguage: false`, combined getters select the current language and
-fall back to a wildcard entry. Setting a different language through the setters
+fall back to its base language (such as `de` for `de-DE`), then a wildcard
+entry. If only one entry exists, it is retained even without a matching locale. Setting a different language through the setters
 raises `RuntimeException` when a current language is configured. Set the page's
 language before its description and keywords.
 

@@ -4,6 +4,7 @@ namespace Meta\Test\TestCase\View\Helper;
 
 use Cake\Core\Configure;
 use Cake\Http\ServerRequest;
+use Cake\I18n\I18n;
 use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
@@ -758,7 +759,9 @@ class MetaHelperTest extends TestCase {
 		$output = $meta->out();
 		$this->assertStringNotContainsString('name="organization"', $output);
 		$this->assertStringNotContainsString('name="multiLanguage"', $output);
-		$this->assertStringContainsString('"@type": "Organization"', $output);
+		preg_match('#<script[^>]*>(.*)</script>#s', $output, $matches);
+		$data = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
+		$this->assertSame('Organization', $data['@type']);
 	}
 
 	public function testAutoLanguageAndScalarDefaultsCanBeUpdated(): void {
@@ -788,10 +791,22 @@ class MetaHelperTest extends TestCase {
 		$this->assertSame([1, 2], array_column($data['itemListElement'], 'position'));
 	}
 
-	public function testInvalidJsonLdCannotSilentlyProduceEmptyScript(): void {
+	public function testInvalidUtf8JsonLdIsReplacedSafely(): void {
 		$this->Meta->setArticle(['headline' => "\xB1"]);
-		$this->expectException(JsonException::class);
-		$this->Meta->getArticle();
+		preg_match('#<script[^>]*>(.*)</script>#s', $this->Meta->getArticle(), $matches);
+		$data = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
+		$this->assertSame("\u{FFFD}", $data['headline']);
+	}
+
+	public function testUnsupportedJsonLdCannotSilentlyProduceEmptyScript(): void {
+		$stream = fopen('php://memory', 'r');
+		try {
+			$this->Meta->setArticle(['headline' => 'Article', 'image' => $stream]);
+			$this->expectException(JsonException::class);
+			$this->Meta->getArticle();
+		} finally {
+			fclose($stream);
+		}
 	}
 
 	public function testMissingTitleDoesNotLeaveAnOpenElement(): void {
@@ -832,6 +847,37 @@ class MetaHelperTest extends TestCase {
 		preg_match('#<script[^>]*>(.*)</script>#s', $this->Meta->getBreadcrumbs(), $matches);
 		$data = json_decode($matches[1], true, 512, JSON_THROW_ON_ERROR);
 		$this->assertStringContainsString('?a=1&b=2', $data['itemListElement'][0]['item']);
+	}
+
+	public function testSingleLanguageEntryWithoutConfiguredLocaleIsPreserved(): void {
+		$meta = new MetaHelper($this->View, ['multiLanguage' => false]);
+		$meta->setDescription('English description', 'en');
+		$meta->setKeywords('English keywords', 'en');
+		$this->assertSame('<meta name="description" content="English description" lang="en">', $meta->getDescription());
+		$this->assertSame('<meta name="keywords" content="English keywords" lang="en">', $meta->getKeywords());
+	}
+
+	public function testRegionalLocaleSelectsBaseLanguageEntries(): void {
+		$meta = new MetaHelper($this->View, [
+			'language' => true,
+			'multiLanguage' => false,
+			'description' => ['de' => 'Deutsch', 'en' => 'English'],
+			'keywords' => ['de' => 'eins', 'en' => 'one'],
+		]);
+		$this->assertSame('<meta name="description" content="Deutsch" lang="de">', $meta->getDescription());
+		$this->assertSame('<meta name="keywords" content="eins" lang="de">', $meta->getKeywords());
+	}
+
+	public function testAutomaticLanguageFollowsCakeLocaleChanges(): void {
+		$locale = I18n::getLocale();
+		try {
+			I18n::setLocale('fr_FR');
+			$meta = new MetaHelper($this->View, ['language' => true]);
+			$meta->setDescription('Description');
+			$this->assertSame('<meta name="description" content="Description" lang="fr-FR">', $meta->getDescription());
+		} finally {
+			I18n::setLocale($locale);
+		}
 	}
 
 }
